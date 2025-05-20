@@ -1,19 +1,19 @@
 class DetalleMuestra:
-    def __init__(self, valor, tipo_de_dato):
-        self._valor = valor
-        self._tipo_de_dato = tipo_de_dato  # instancia de TipoDeDato
+    def __init__(self, valor, tipoDato):
+        self.valor = valor
+        self.tipoDato = tipoDato  # 1 sola instancia de tipoDato
 
     def getDatos(self):
-        return {"valor": self._valor, "tipoDeDato": self._tipo_de_dato.getDenominacion()}
+        return self.tipoDato.getDenominacion(), self.getValor(), self.tipoDato.getNombreUnidadMedida()
 
     def getValor(self):
-        return self._valor
+        return self.valor
 
     def setValor(self, valor):
-        self._valor = valor
+        self.valor = valor
 
     def getTipoDeDato(self):
-        return self._tipo_de_dato
+        return self.tipoDato
 
-    def setTipoDeDato(self, tipo_de_dato):
-        self._tipo_de_dato = tipo_de_dato
+    def setTipoDeDato(self, tipoDato):
+        self.tipoDato = tipoDato

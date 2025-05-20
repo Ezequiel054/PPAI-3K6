@@ -1,3 +1,4 @@
+from Clases.CambioEstado import CambioEstado
 class EventoSismico:
     def __new__(cls, fechaHoraFin,FechaHoraOcurrencia,latitudEpicentro,latitudHipocentro,longitudEpicentro,longitudHipocentro,valorMagnitud,estadoActual):
         instancia = super().__new__(cls)
@@ -11,7 +12,9 @@ class EventoSismico:
         instancia.estadoActual = estadoActual
         return instancia
     
-    def __init__(self,fechaHoraFin,FechaHoraOcurrencia,latitudEpicentro,latitudHipocentro,longitudEpicentro,longitudHipocentro,valorMagnitud,estadoActual):
+    def __init__(self,fechaHoraFin,FechaHoraOcurrencia,latitudEpicentro,latitudHipocentro,longitudEpicentro,
+                 longitudHipocentro, valorMagnitud, estadoActual,
+                 cambioEstado, alcanceSismo, origenGeneracion, clasificacion,serieTemporal ):
         self.fechaHoraFin = fechaHoraFin
         self.FechaHoraOcurrencia = FechaHoraOcurrencia
         self.latitudEpicentro = latitudEpicentro
@@ -20,6 +23,17 @@ class EventoSismico:
         self.longitudHipocentro = longitudHipocentro
         self.valorMagnitud = valorMagnitud
         self.estadoActual = estadoActual
+        
+        ## revisar estos atributos
+        self.cambioEstado = []
+        self.cambioEstado = cambioEstado
+        self.origenGeneracion = origenGeneracion
+        self.alcanceSismo = alcanceSismo
+        self.clasificacion = clasificacion
+
+        self.serieTemporal = []
+        self.serieTemporal = serieTemporal
+
 
     def get_fechaHoraFin(self):
         return self.fechaHoraFin
@@ -64,16 +78,9 @@ class EventoSismico:
         self.valorMagnitud = valorMagnitud
 
 
-    # Esta función obtiene las reseñas de un vino en un período de tiempo específico realizadas por un sommelier en particular.
-    # Si no hay reseñas que cumplan con los criterios, retorna False y una lista vacía.
-    # Si hay reseñas que cumplan con los criterios, retorna True y la lista de reseñas.
-
-    
-    # Esta función obtiene y retorna el nombre de la bodega asociada a la instancia actual.
     def esAutodetectado(self):
         return self.estadoActual.esAutoDetectado()
     
-    # Esta función obtiene y retorna una lista de descripciones de los varietales de un vino.
     def obtenerDatosPrincipales(self):
         datos_evento = {
         "FechaHoraOcurrencia": self.get_FechaHoraOcurrencia(),
@@ -84,32 +91,37 @@ class EventoSismico:
         "LatitudHipocentro": self.get_latitudHipocentro()}
         return datos_evento
 
-    # Esta función calcula y retorna el puntaje promedio de una lista de puntajes.
-    # La lista de puntajes puede contener sublistas de puntajes.
-    # Si no hay puntajes, retorna 0. Si hay puntajes, retorna el promedio con dos decimales.
-    def calcular_puntaje_promedio(self,puntajes):
-        if not puntajes: 
-            return 0
-    
-        puntajes_totales = []
-        for sublista in puntajes:
-            if isinstance(sublista, list):
-                puntajes_totales.extend(sublista)
-            else:
-                puntajes_totales.append(sublista)
+    def bloquearEnRevision(self, fechaActual, bloqueadoEnRevision):
+        self.buscarEstadoActual(fechaActual)
+        self.setEstadoActual(bloqueadoEnRevision)
+        nuevoCambioEstado = self.crearCambioEstado(fechaActual, bloqueadoEnRevision)
+        self.cambioEstado.append(nuevoCambioEstado)
 
-        if not puntajes_totales:
-            return 0
+    def buscarEstadoActual(self, fechaHoraFin):
+        for ce in self.cambioEstado:
+            if ce.esEstadoActual():
+                ce.setFechaHoraFin(fechaHoraFin)
+                # revisar esta parte, setFechHoraFin debe estar por fuera del loop?
+                #  en ese caso esEstadoActual debe retornar puntero a ese estado
+        
 
-        promedio_general = sum(puntajes_totales) / len(puntajes_totales)
-        promedio_general = "{:.2f}".format(promedio_general)
-        return promedio_general
+    def setEstadoActual(self, estado):
+        self.estadoActual = estado
 
-    # Esta función obtiene y retorna una lista de puntajes de reseñas de un vino en un período de tiempo específico realizadas por un sommelier en particular.
-    def calcular_puntaje_de_sommelier_en_periodo(self,vino,fecha_desde,fecha_hasta,sommelier):
-        puntaje_resenias=[]
-        for resenia in vino.get_resenia():
-            if resenia.sos_de_periodo(fecha_desde, fecha_hasta, resenia.get_fecha_resenia()):
-                if resenia.sos_de_somellier(sommelier):
-                    puntaje_resenias.append(resenia.get_puntaje())
-        return puntaje_resenias
+    def crearCambioEstado(self, fechaHoraInicio, bloqueadoEnRevision):
+        return CambioEstado(bloqueadoEnRevision,fechaHoraInicio, None)
+        ## revisar el None, se pasa como parametro al crear un nuevo CE?
+
+    def getDatosRestantes(self):
+        
+        alcance = self.alcanceSismo.getNombre()
+        clasificacion = self.clasificacion.getNombre()
+        origenGeneracion = self.origenGeneracion.getNombre()
+
+        return alcance, clasificacion, origenGeneracion
+
+    def obtenerDatosSeriesTemporal(self):
+        
+        for st in self.serieTemporal:
+            st.getDatos()
+

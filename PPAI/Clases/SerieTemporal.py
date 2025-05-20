@@ -21,6 +21,18 @@ class SerieTemporal:
             "cantidadMuestras": len(self._muestras)
         }
 
+    ## revisar metodos de arriba
+    def getDatos(self):
+            self.obtenerMuestrasSismicas()
+
+    def obtenerMuestrasSismicas(self):
+        # aca habria que crear datosMuestrales como lista o no hace falta?
+        for ms in self._muestras:
+            datosMuestrales = ms.getDatos()
+
+        return datosMuestrales
+
+
     def getCondicionAlarma(self):
         return self._condicion_alarma
 
