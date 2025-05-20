@@ -60,7 +60,7 @@ class PantallaRegRevisionManual():
         for fila_datos in datos[:6]:
             
             if len(fila_datos) >= 6:
-                datos_eventos = [fila_datos[0], fila_datos[6], str(fila_datos[1]), fila_datos[2], fila_datos[3][0], fila_datos[3][1]]
+                datos_eventos = [fila_datos[0], fila_datos[1], fila_datos[2], fila_datos[3], fila_datos[3], fila_datos[4], fila_datos[5]]
 
                 tabla.insert("", "end", values=datos_eventos)
             else:
