@@ -16,6 +16,14 @@ def main():
     eventos = generar_eventos_sismicos(5)
     mostrarEventos=pantalla_registrar_revision_manual.mostrarEventosSismicosASeleccionar(eventos)       
     print(mostrarEventos)
-                         
+
+
+def main2():
+    
+    eventos = generar_eventos_sismicos(5)  
+    for e in eventos:
+        print(f"Sismo del {e.fechaHoraOcurrencia}: Magnitud {e.valorMagnitud} Richter, Clasificacion {e.clasificacion.getNombre()}, Origen {e.origenGeneracion.getNombre()}, Alcance {e.alcanceSismo.getNombre()}")
+        print(f"        Hipocentro {e.latitudHipocentro} , {e.longitudHipocentro}: Epicentro {e.latitudEpicentro}, {e.longitudEpicentro}")
+
 if __name__ == '__main__':
-    main()
+    main2()

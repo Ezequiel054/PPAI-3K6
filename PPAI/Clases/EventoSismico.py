@@ -94,29 +94,24 @@ class EventoSismico:
         return datos_evento
 
     def bloquearEnRevision(self, fechaActual, bloqueadoEnRevision):
-        self.buscarEstadoActual(fechaActual)
-        ## aca iria
+        cambioEstadoActual = self.buscarEstadoActual()
+        cambioEstadoActual.setFechaHoraFin(fechaActual)
 
         self.setEstadoActual(bloqueadoEnRevision)
-        nuevoCambioEstado = self.crearCambioEstado(fechaActual, bloqueadoEnRevision)
-        self.cambioEstado.append(nuevoCambioEstado)
-        # ver nombre bloqeuaod en revision
+        bloqueadoEnRevision = self.crearCambioEstado(fechaActual, bloqueadoEnRevision)
+        self.cambioEstado.append(bloqueadoEnRevision)
 
-    def buscarEstadoActual(self, fechaHoraFin):
+    def buscarEstadoActual(self):
         for ce in self.cambioEstado:
             if ce.esEstadoActual():
-                ce.setFechaHoraFin(fechaHoraFin)
-                break
-                # revisar esta parte, setFechHoraFin debe estar por fuera del loop?
-                #  en ese caso esEstadoActual debe retornar puntero a ese estado
+                return ce
+                
         
-
     def setEstadoActual(self, estado):
         self.estadoActual = estado
 
-    def crearCambioEstado(self, fechaHoraInicio, bloqueadoEnRevision):
-        return CambioEstado(bloqueadoEnRevision,fechaHoraInicio)
-        ## revisar el None, se pasa como parametro al crear un nuevo CE?
+    def crearCambioEstado(self, fechaHoraInicio, nuevoEstado):
+        return CambioEstado(nuevoEstado,fechaHoraInicio)
         ## agegar el empleado al CE
 
     def getDatosRestantes(self):
@@ -127,7 +122,6 @@ class EventoSismico:
 
         return alcance, clasificacion, origenGeneracion
 
-# este metodo en secuncia esta en el gestor, para mi va en evento sismico
     def obtenerDatosSeriesTemporal(self):
         
         datosSeriesTemporalesPorEstacion = []
@@ -140,7 +134,9 @@ class EventoSismico:
         return datosSeriesTemporalesPorEstacion
 
     def rechazar(self,fechaActual,rechazado):
-        self.buscarEstadoActual(fechaActual)
+        cambioEstadoActual = self.buscarEstadoActual()
+        cambioEstadoActual.setFechaHoraFin(fechaActual)
+
         self.setEstadoActual(rechazado)
-        nuevoCambioEstado = self.crearCambioEstado(fechaActual, rechazado)
-        self.cambioEstado.append(nuevoCambioEstado)
+        rechazado = self.crearCambioEstado(fechaActual, rechazado)
+        self.cambioEstado.append(rechazado)
