@@ -23,14 +23,33 @@ class SerieTemporal:
 
     ## revisar metodos de arriba
     def getDatos(self):
-            self.obtenerMuestrasSismicas()
+            listaDatosMuestrales= self.obtenerMuestrasSismicas()
+            return listaDatosMuestrales
 
     def obtenerMuestrasSismicas(self):
-        # aca habria que crear datosMuestrales como lista o no hace falta?
+        listaDatosMuestrales = []
+        
         for ms in self._muestras:
             datosMuestrales = ms.getDatos()
+            ## FechaHoraMuestra ,Denominacion, valor, nombreUnidadMedida
+            ## 21/02/2025 19:05:41, Velocidad de onda,7,Km/seg 
+            listaDatosMuestrales.append(datosMuestrales)
 
-        return datosMuestrales
+        estacionSismologica = self.obtenerEstacionSismologica()
+        return estacionSismologica, listaDatosMuestrales
+
+
+    def obtenerEstacionSismologica(self):
+        estacionSismologica = self.sosDeSerieTemporal(self)
+        return estacionSismologica
+
+    def sosDeSerieTemporal(self):
+            
+            listaSismografos = cargarSismografos()
+            for sismografo in listaSismografos:
+                if self in sismografo.seriesTemporales:
+                    return sismografo.estacionSismologica.getNombre()
+
 
 
     def getCondicionAlarma(self):

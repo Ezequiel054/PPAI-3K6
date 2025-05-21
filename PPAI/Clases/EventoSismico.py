@@ -14,7 +14,7 @@ class EventoSismico:
     
     def __init__(self,fechaHoraFin,FechaHoraOcurrencia,latitudEpicentro,latitudHipocentro,longitudEpicentro,
                  longitudHipocentro, valorMagnitud, estadoActual,
-                 cambioEstado, alcanceSismo, origenGeneracion, clasificacion,serieTemporal ):
+                 cambioEstado, alcanceSismo, origenGeneracion, clasificacion,serieTemporal):
         self.fechaHoraFin = fechaHoraFin
         self.FechaHoraOcurrencia = FechaHoraOcurrencia
         self.latitudEpicentro = latitudEpicentro
@@ -33,6 +33,8 @@ class EventoSismico:
 
         self.serieTemporal = []
         self.serieTemporal = serieTemporal
+
+      
 
 
     def get_fechaHoraFin(self):
@@ -93,14 +95,18 @@ class EventoSismico:
 
     def bloquearEnRevision(self, fechaActual, bloqueadoEnRevision):
         self.buscarEstadoActual(fechaActual)
+        ## aca iria
+
         self.setEstadoActual(bloqueadoEnRevision)
         nuevoCambioEstado = self.crearCambioEstado(fechaActual, bloqueadoEnRevision)
         self.cambioEstado.append(nuevoCambioEstado)
+        # ver nombre bloqeuaod en revision
 
     def buscarEstadoActual(self, fechaHoraFin):
         for ce in self.cambioEstado:
             if ce.esEstadoActual():
                 ce.setFechaHoraFin(fechaHoraFin)
+                break
                 # revisar esta parte, setFechHoraFin debe estar por fuera del loop?
                 #  en ese caso esEstadoActual debe retornar puntero a ese estado
         
@@ -109,8 +115,9 @@ class EventoSismico:
         self.estadoActual = estado
 
     def crearCambioEstado(self, fechaHoraInicio, bloqueadoEnRevision):
-        return CambioEstado(bloqueadoEnRevision,fechaHoraInicio, None)
+        return CambioEstado(bloqueadoEnRevision,fechaHoraInicio)
         ## revisar el None, se pasa como parametro al crear un nuevo CE?
+        ## agegar el empleado al CE
 
     def getDatosRestantes(self):
         
@@ -120,8 +127,20 @@ class EventoSismico:
 
         return alcance, clasificacion, origenGeneracion
 
+# este metodo en secuncia esta en el gestor, para mi va en evento sismico
     def obtenerDatosSeriesTemporal(self):
         
+        datosSeriesTemporalesPorEstacion = []
         for st in self.serieTemporal:
-            st.getDatos()
+            datosSeriesTemporal = st.getDatos()
+            ## Estacion Sismologica,[ [FechaHoraMuestra ,Denominacion, valor, nombreUnidadMedida],[FechaHoraMuestra ,Denominacion, valor, nombreUnidadMedida] ]
 
+            datosSeriesTemporalesPorEstacion.append(datosSeriesTemporal)
+
+        return datosSeriesTemporalesPorEstacion
+
+    def rechazar(self,fechaActual,rechazado):
+        self.buscarEstadoActual(fechaActual)
+        self.setEstadoActual(rechazado)
+        nuevoCambioEstado = self.crearCambioEstado(fechaActual, rechazado)
+        self.cambioEstado.append(nuevoCambioEstado)
