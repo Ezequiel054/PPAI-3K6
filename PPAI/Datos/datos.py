@@ -1,5 +1,4 @@
-from Clases.EventoSismico import *
-import random
+
 from datetime import datetime, timedelta
 import random
 
@@ -77,7 +76,7 @@ def generar_eventos_sismicos(n):
     eventos = []
 
     for _ in range(n):
-        fecha_ocurrencia = datetime.now() - timedelta(days=random.randint(0, 365))
+        fecha_ocurrencia = datetime.now().replace(microsecond=0) - timedelta(days=random.randint(0, 365))
         fecha_fin = fecha_ocurrencia + timedelta(minutes=random.randint(1, 30))
 
         lat_epicentro = round(random.uniform(-90, 90), 6)
@@ -103,6 +102,5 @@ def generar_eventos_sismicos(n):
             origen,
             alcance
         )
-        eventos.append(evento)
-
+        eventos.append(evento) 
     return eventos
