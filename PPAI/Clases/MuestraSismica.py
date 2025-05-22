@@ -1,17 +1,16 @@
 class MuestraSismica:
     def __init__(self, fechaHoraMuestra, detallesMuestrasSismica):
         self.fechaHoraMuestra = fechaHoraMuestra
-        self.detallesMuestrasSismica = []
-        self.detallesMuestrasSismica = detallesMuestrasSismica
+        self._detallesMuestrasSismica = detallesMuestrasSismica
 
     def crearDetalleMuestra(self, detalle):
-        self._detalles.append(detalle)
+        self._detallesMuestrasSismica.append(detalle)
 
-    def getDatos(self):
-        return {
-            "fechaHoraMuestra": self.fechaHoraMuestra,
-            "detalles": [d.getDatos() for d in self._detalles]
-        }
+    # def getDatos(self):
+    #     return {
+    #         "fechaHoraMuestra": self.fechaHoraMuestra,
+    #         "detalles": [d.getDatos() for d in self._detallesMuestrasSismica]
+    #     }
 
     def getFechaHoraMuestra(self):
         return self.fechaHoraMuestra
@@ -20,7 +19,7 @@ class MuestraSismica:
         self.fechaHoraMuestra = fecha
 
     def getDetalles(self):
-        return self._detalles
+        return self._detallesMuestrasSismica
 
     ## modifco desde aca
     def getDatos(self):
@@ -32,7 +31,7 @@ class MuestraSismica:
     ## este metodo no esta en la secuncia, seria un self, revisar
     def obtenerDetalleMuestra(self):
         datosMuestrales = []
-        for dm in self.detallesMuestrasSismica:
+        for dm in self._detallesMuestrasSismica:
 
             datosMuestra = dm.getDatos()
             ## Denominacion, valor, nombreUnidadMedida

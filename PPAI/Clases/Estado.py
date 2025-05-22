@@ -15,14 +15,24 @@ class Estado:
     def setNombreEstado(self, nombre_estado):
         self._nombre_estado = nombre_estado
 
-    def esAutodetectado(self):
-        return self._nombre_estado.lower() == "autodetectado"
+
 
     def esAmbitoEventoSismico(self):
         return self._ambito.lower() == "evento sismico"
 
+
+######## aca van
+
+    def esAutodetectado(self):
+        return self._nombre_estado == "Autodetectado"
     def esBloqueadoEnRevision(self):
-        return self._nombre_estado.lower() == "bloqueado en revisión"
+        return self._nombre_estado == "Bloqueado en revision"
 
     def esRechazado(self):
-        return self._nombre_estado.lower() == "rechazado"
+        return self._nombre_estado == "Rechazado"
+
+    def esDerivadoAExperto(self):
+        return self._nombre_estado == "Derivado a experto"
+    
+    def esConfirmado(self):
+        return self._nombre_estado == "Confirmado"

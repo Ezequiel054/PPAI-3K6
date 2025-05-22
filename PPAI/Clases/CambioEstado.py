@@ -1,11 +1,12 @@
 from datetime import datetime
 
 class CambioEstado:
-    def __init__(self, estado, fecha_hora_inicio, fecha_hora_fin=None):
+    def __init__(self, estado, fecha_hora_inicio, usuarioLogueado=None, fecha_hora_fin=None ):
         self._estado = estado  # Instancia de la clase Estado
         self._fecha_hora_inicio = fecha_hora_inicio
         self._fecha_hora_fin = fecha_hora_fin
-
+        self.usuarioLogueado = usuarioLogueado
+        
     def getEstado(self):
         return self._estado
 

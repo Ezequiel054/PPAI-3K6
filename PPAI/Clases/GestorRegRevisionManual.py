@@ -1,19 +1,21 @@
 from typing import List
 from Datos.datos import *
 from datetime import datetime
-from Clases.EventoSismico import EventoSismico
-from Clases.Estado import Estado
+from Clases.EventoSismico import *
+from Clases.Estado import *
+from Clases.Sesion import *
+
 
 class GestorRegRevisionManual:
 # Metodos inicializacion    
-    def __new__(cls):
-        instancia = super().__new__(cls)
-        return instancia
+    # def __new__(cls):
+    #     instancia = super().__new__(cls)
+    #     return instancia
 
-    def __init__(self, todosEventosSismicos, todosEstados: List[Estado], pantalla, actualSesion):
+    def __init__(self, pantalla):
         
-        self._todosEventosSismicos = todosEventosSismicos
-        self._todosEstados = todosEstados
+        self._todosEventosSismicos = generar_eventos_sismicos(5)
+        self._todosEstados = generar_estados()      
         self._PantallaRegRevisionManual = pantalla
 
         ## nuevos atributos
@@ -23,8 +25,8 @@ class GestorRegRevisionManual:
         self.datosSeriesTemporalesPorEstacion = None
         self.seleccionAccion = None
 
-        self.sesion = actualSesion
-        self.aSLogueado = None
+        self.sesion = generar_sesion()
+        self._aSLogueado = None
         
 
 
@@ -36,6 +38,8 @@ class GestorRegRevisionManual:
     """
     def opcRegRevisionManual(self):
             eventosSismicosOrdenados = self.buscarEventosSísmicosAutodetectados()
+
+            ## vuelve como lista de diccionario ordenados
             self.buscarEmpleadoEnSesion()
 
             """
@@ -51,23 +55,23 @@ class GestorRegRevisionManual:
     def buscarEventosSísmicosAutodetectados(self):
         eventosAutodetectados = []
         for evento in self._todosEventosSismicos:
-            
-            if evento.esAutodectado():
+            print(evento)
+            if evento.esAutodetectado():
                 nuevoEventoAutoDetectado = self.obtenerDatosPrincipales(evento)
+                ## implemetna diccionario
                 eventosAutodetectados.append(nuevoEventoAutoDetectado)
                         
         eventosSismicosOrdenados = self.ordenarEventos(eventosAutodetectados)
         return eventosSismicosOrdenados
-        # self._PantallaRegRevisionManual.mostrarEventosSismicosASeleccionar(eventos_sismicos_ordenados_fecha)
-
-    def obtenerDatosPrincipales(self, eventoSismicoSeleccionado):
-        return eventoSismicoSeleccionado.obtenerDatosPrincipales()
     
 
-    def ordenarEventos(self,eventosAutodetectados):
-        eventosOrdenados = sorted(eventosAutodetectados, key=lambda item: item["FechaHoraOcurrencia"])
+    def obtenerDatosPrincipales(self, evento):
+        return evento.obtenerDatosPrincipales()
+    
+
+    def ordenarEventos(self, eventosAutodetectados):
+        eventosOrdenados = sorted(eventosAutodetectados, key=lambda item: item["fechaHoraOcurrencia"], reverse=True)
         return eventosOrdenados
-   
     """ 
         PASO 3
     """
@@ -75,7 +79,16 @@ class GestorRegRevisionManual:
         
         ### GUARDAMOS EL EVENTO SELECCIONADO COMO ATRIBUTO
         self.eventoSismicoSeleccionado = eventoSismicoSeleccionado
+         
+        aux = self.eventoSismicoSeleccionado[0]
+        latitud = str(aux[1])
         
+        for evento in self._todosEventosSismicos:
+            if str(evento.get_latitudEpicentro()) == latitud:
+                print(evento.get_latitudEpicentro())
+                self.eventoSismicoSeleccionado = evento
+                break   
+    
         self.bloquearEventoSeleccionado()
         
         ## PASO 5
@@ -89,8 +102,6 @@ class GestorRegRevisionManual:
         ## PASO 6
         self._PantallaRegRevisionManual.habilitarOpcionVisualizarMapa()
        
-
-
     
     """ 
         PASO 4 cambio estado
@@ -112,20 +123,20 @@ class GestorRegRevisionManual:
         return datetime.now()
 
     def bloquearEventoSismico(self, fechaActual, estado):
-        self.eventoSismicoSeleccionado.bloquearEnRevision(fechaActual, estado,self.aSLogueado)
+        self.eventoSismicoSeleccionado.bloquearEnRevision(fechaActual, estado,self._aSLogueado)
 
    
     """ 
         PASO 5
     """
     def buscarDatosEventosSisimicoSeleccionado(self):
-        self.datosAlcanceClasificacionOrigen = self.eventoSeleccionado.getDatosRestantes()
+        self.datosAlcanceClasificacionOrigen = self.eventoSismicoSeleccionado.getDatosRestantes()
         self.datosSeriesTemporalesPorEstacion = self.obtenerDatosSeriesTemporal()
 
 
 
     def obtenerDatosSeriesTemporal(self):
-        datosSeriesTemporalesPorEstacion = self.eventoSeleccionado.obtenerDatosSeriesTemporal()
+        datosSeriesTemporalesPorEstacion = self.eventoSismicoSeleccionado.obtenerDatosSeriesTemporal()
 
         return datosSeriesTemporalesPorEstacion
 
@@ -233,11 +244,11 @@ class GestorRegRevisionManual:
     def rechazarEvento(self,fechaActual, estadoRechazado):
         self.eventoSismicoSeleccionado.rechazar(fechaActual, estadoRechazado,self.aSLogueado)
 
-
+    
 
     def buscarEmpleadoEnSesion(self):
-        self.aSLogueado = self.sesion.getEmpleado()
-
+        empleado = self.sesion.getEmpleado()
+        self.setAsLogueado(empleado)
    
         """ 
             FIN CU
@@ -271,7 +282,7 @@ class GestorRegRevisionManual:
     ## derivar a solicitud evento
 
     def derivarARevisionEventoSeleccionado(self):
-        estadoConfirmado = self.buscarEstadoDerivadoAExperto()
+        estadoDerivadoAExperto = self.buscarEstadoDerivadoAExperto()
         fechaActual = self.getFechaHoraActual()
         self.derivarARevisionEvento(fechaActual, estadoDerivadoAExperto,self.aSLogueado)
 
@@ -282,3 +293,6 @@ class GestorRegRevisionManual:
         
     def derivarARevisionEvento(self,fechaActual,estadoDerivadoAExperto):
         self.eventoSismicoSeleccionado.derivarARevision(fechaActual, estadoDerivadoAExperto,self.aSLogueado)
+
+    def setAsLogueado(self, aSLogueado):
+        self._aSLogueado = aSLogueado

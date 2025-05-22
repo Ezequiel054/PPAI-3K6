@@ -3,6 +3,9 @@ from tkinter import messagebox,ttk,simpledialog,font
 from datetime import datetime
 from tkcalendar import Calendar, DateEntry
 from tkinter.ttk import Combobox
+from Clases.GestorRegRevisionManual import * 
+from Clases.Estado import * 
+from Clases.Sesion import * 
 
 class PantallaRegRevisionManual():
     def __new__(cls):
@@ -10,10 +13,14 @@ class PantallaRegRevisionManual():
         return instancia
     
     def __init__(self):
-        pass
+        self.gestor = None
     
     # Esta función crea una ventana de interfaz gráfica con un botón para generar un reporte de ranking de vinos.
     def opcionRegResultadoDeRevisiónManual(self):
+        self.habilitar_pantalla()
+        
+
+    def habilitar_pantalla(self):
         self.root = Tk()
         self.root.geometry("700x500")
         self.root.title("Red Sísmica")
@@ -21,7 +28,7 @@ class PantallaRegRevisionManual():
 
         self.root.configure(bg="#050c57")
 
-        self.cerrar_presionado = False
+        self.cerrar_presionado = True
 
         mi_tipo_de_letra = font.Font(family="Arial", size=14, weight="bold")
 
@@ -36,11 +43,12 @@ class PantallaRegRevisionManual():
         self.root.mainloop()
 
         if self.cerrar_presionado:
+            self.gestor = GestorRegRevisionManual(self)
+            self.gestor.opcRegRevisionManual()
+            
+            
             return True
         else:return False
-
-    def habilitar_pantalla(self):
-        pass
   
     def mostrarEventosSismicosASeleccionar(self, datos):
         self.root = Tk()
@@ -60,11 +68,14 @@ class PantallaRegRevisionManual():
             ancho_columna = 150
             self.tabla_eventos.heading(encabezado, text=encabezado, anchor=CENTER)
             self.tabla_eventos.column(encabezado, width=ancho_columna, anchor=CENTER)
+        
+        
         for fila_datos in datos[:6]:
+            print(fila_datos)
             datos_eventos = [
-                fila_datos.fechaHoraOcurrencia, fila_datos.latitudEpicentro,
-                fila_datos.longitudHipocentro, fila_datos.valorMagnitud,
-                fila_datos.longitudEpicentro, fila_datos.latitudHipocentro
+                fila_datos['fechaHoraOcurrencia'], fila_datos['latitudEpicentro'],
+                fila_datos['longitudHipocentro'], fila_datos['valorMagnitud'],
+                fila_datos['longitudEpicentro'], fila_datos['latitudHipocentro']
             ]
             self.tabla_eventos.insert("", "end", values=datos_eventos)
 
@@ -91,8 +102,12 @@ class PantallaRegRevisionManual():
     def tomarSeleccionEventoSismico(self):
         items = self.tabla_eventos.selection()
         if items:
+            
             self.seleccion_eventos = [self.tabla_eventos.item(item, 'values') for item in items]
             self.root.quit()
+            self.gestor.tomarSeleccionEventoSismico(self.seleccion_eventos)
+            
+            
         else:
             messagebox.showwarning("Selección requerida", "Por favor seleccione al menos una fila antes de enviar.")
             

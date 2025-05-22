@@ -2,56 +2,19 @@
 from datetime import datetime, timedelta
 import random
 
-from PPAI.Clases import Empleado, Estado
-
-# Entidades asociadas
-
-class ClasificacionSismo:
-    def __init__(self, nombre, kmProfundidadDesde, kmProfundidadHasta):
-        self.nombre = nombre
-        self.kmProfundidadDesde = kmProfundidadDesde
-        self.kmProfundidadHasta = kmProfundidadHasta
-
-    def getNombre(self):
-        return self.nombre
-
-
-class OrigenDeGeneracion:
-    def __init__(self, nombre, descripcion):
-        self.nombre = nombre
-        self.descripcion = descripcion
-
-    def getNombre(self):
-        return self.nombre
-
-
-class AlcanceSismo:
-    def __init__(self, nombre, descripcion):
-        self.nombre = nombre
-        self.descripcion = descripcion
-
-    def getNombre(self):
-        return self.nombre
-
-
-# Clase principal
-
-class EventoSismico:
-    def __init__(self, fechaHoraOcurrencia, fechaHoraFin,
-                 latitudEpicentro, longitudEpicentro,
-                 latitudHipocentro, longitudHipocentro,
-                 valorMagnitud, clasificacion,
-                 origenGeneracion, alcanceSismo):
-        self.fechaHoraOcurrencia = fechaHoraOcurrencia
-        self.fechaHoraFin = fechaHoraFin
-        self.latitudEpicentro = latitudEpicentro
-        self.longitudEpicentro = longitudEpicentro
-        self.latitudHipocentro = latitudHipocentro
-        self.longitudHipocentro = longitudHipocentro
-        self.valorMagnitud = valorMagnitud
-        self.clasificacion = clasificacion
-        self.origenGeneracion = origenGeneracion
-        self.alcanceSismo = alcanceSismo
+from Clases.Empleado import Empleado
+from Clases.Estado import Estado
+from Clases.Usuario import Usuario
+from Clases.Sesion import Sesion
+from Clases.EventoSismico import EventoSismico
+from Clases.CambioEstado import CambioEstado
+from Clases.AlcanceSismo import AlcanceSismo
+from Clases.ClasificacionSismo import ClasificacionSismo
+from Clases.OrigenDeGeneracion import OrigenDeGeneracion
+from Clases.SerieTemporal import SerieTemporal
+from Clases.TipoDeDato import TipoDeDato
+from Clases.MuestraSismica import MuestraSismica
+from Clases.DetalleMuestra import DetalleMuestra
 
 
 # Generador de eventos
@@ -76,7 +39,8 @@ def generar_eventos_sismicos(n):
     ]
 
     eventos = []
-
+    estados = generar_estados()
+    
     for _ in range(n):
         fecha_ocurrencia = datetime.now().replace(microsecond=0) - timedelta(days=random.randint(0, 365))
         fecha_fin = fecha_ocurrencia + timedelta(minutes=random.randint(1, 30))
@@ -91,21 +55,38 @@ def generar_eventos_sismicos(n):
         clasificacion = random.choice(clasificaciones)
         origen = random.choice(origenes)
         alcance = random.choice(alcances)
-
+        
+        cambios_estado = generar_cambioEstado()
+        estadoactual = estados[1]
+        actualCambioEstado = CambioEstado(estadoactual, datetime.now())
+        cambios_estado.append(actualCambioEstado)
+        serieTemporal = generar_st()
+        
+        ''' def __init__(self,fechaHoraFin,FechaHoraOcurrencia,latitudEpicentro,latitudHipocentro,longitudEpicentro,
+                 longitudHipocentro, valorMagnitud, estadoActual,
+                 cambioEstado, alcanceSismo, origenGeneracion, clasificacion,serieTemporal):
+        '''
         evento = EventoSismico(
-            fecha_ocurrencia,
             fecha_fin,
+            fecha_ocurrencia,
             lat_epicentro,
-            lon_epicentro,
             lat_hipocentro,
+            lon_epicentro,
             lon_hipocentro,
             magnitud,
-            clasificacion,
+            estadoactual,
+            cambios_estado,
+            alcance,
             origen,
-            alcance
+            clasificacion,
+            serieTemporal
+            
         )
         eventos.append(evento) 
     return eventos
+
+
+
 
 def generar_estados():
     # Crear los objetos Estado
@@ -113,10 +94,66 @@ def generar_estados():
     estado_2 = Estado("Evento Sismico", "Autodetectado")
     estado_3 = Estado("Evento Sismico", "Bloqueado en revision")
     estado_4 = Estado("Evento Sismico", "Rechazado")
+    estado_5 = Estado("Evento Sismico", "derivado a experto")
 
     # Lista de estados, útil para insertarlos en la base de datos
-    estados = [estado_3, estado_2, estado_1, estado_4]
+    estados = [estado_1, estado_2, estado_3, estado_4, estado_5]
     return estados
+
+def generar_cambioEstado():
+    estado = generar_estados()
+    # Fechas base
+    ahora = datetime.now()
+
+    # Crear 5 cambios de estado
+    cambio_1 = CambioEstado(estado[1],ahora - timedelta(days=3), ahora - timedelta(days=2))
+    cambio_2 = CambioEstado(estado[2],ahora - timedelta(days=2), ahora - timedelta(days=1))
+    cambio_3 = CambioEstado(estado[0], ahora - timedelta(days=1), ahora)
+    # cambio_4 = CambioEstado(estado[4], ahora)
+
+    # Guardarlos en una lista
+    cambios = [cambio_1, cambio_2, cambio_3]  
+    return cambios  
+
+def generar_serieTemporal():
+    # Crear tipos de datos
+    vel = TipoDeDato("Velocidad de onda", "Km/seg")
+    frec = TipoDeDato("Frecuencia de onda", "Hz")
+    long = TipoDeDato("Longitud de onda", "m")
+    fecha_inicio = datetime(2025, 5, 22, 12, 0)
+    
+    
+    ## 21/02/2025 19:05:41 
+    #  Velocidad de onda,7,Km/seg 
+    # Velocidad de onda,7,Km/seg 
+    
+ 
+    hora_muestra = fecha_inicio + timedelta(minutes=random.randint(1, 30))
+    muestra = MuestraSismica(hora_muestra, [])
+    valor1=5
+    
+    valor2=1
+    valor3=2
+
+    detalle1 = DetalleMuestra(valor1, vel)
+    detalle2= DetalleMuestra(valor2, frec)
+    detalle3 = DetalleMuestra(valor3, long)
+
+    muestra.crearDetalleMuestra(detalle1)
+    muestra.crearDetalleMuestra(detalle2)
+    muestra.crearDetalleMuestra(detalle3)
+    # Crear la serie temporal
+    
+    serie = SerieTemporal(muestra)
+    return serie
+
+    
+def generar_st():
+    s1= generar_serieTemporal()
+    s2= generar_serieTemporal()
+    s3= generar_serieTemporal()
+    
+    return [s1,s2,s3]
 
 def generar_empleados():
     empleado_1 = Empleado("Lucía", "González")
@@ -135,5 +172,16 @@ def generar_empleados():
         empleado_4, empleado_5, empleado_6,
         empleado_7, empleado_8, empleado_9
     ]    
-    return empleados
+    num_empleado = random.randint(0, 8)
+    
+    return empleados[num_empleado]
 
+def generar_usuario():
+
+    empleado = generar_empleados()
+    usuario = Usuario(empleado)
+    return usuario
+
+def generar_sesion():
+    user = generar_usuario()
+    return Sesion(user)

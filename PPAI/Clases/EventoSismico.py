@@ -2,21 +2,22 @@ from Clases.CambioEstado import CambioEstado
 from Clases.Estado import Estado
 
 class EventoSismico:
-    def __new__(cls, fechaHoraFin,FechaHoraOcurrencia,latitudEpicentro,latitudHipocentro,longitudEpicentro,longitudHipocentro,valorMagnitud,estadoActual):
-        instancia = super().__new__(cls)
-        instancia.fechaHoraFin = fechaHoraFin
-        instancia.FechaHoraOcurrencia = FechaHoraOcurrencia
-        instancia.latitudEpicentro = latitudEpicentro
-        instancia.latitudHipocentro = latitudHipocentro
-        instancia.longitudEpicentro = longitudEpicentro
-        instancia.longitudHipocentro = longitudHipocentro
-        instancia.valorMagnitud = valorMagnitud
-        instancia.estadoActual = estadoActual
-        return instancia
+    # def __new__(cls, fechaHoraFin,FechaHoraOcurrencia,latitudEpicentro,latitudHipocentro,longitudEpicentro,longitudHipocentro,valorMagnitud,estadoActual):
+    #     instancia = super().__new__(cls)
+    #     instancia.fechaHoraFin = fechaHoraFin
+    #     instancia.FechaHoraOcurrencia = FechaHoraOcurrencia
+    #     instancia.latitudEpicentro = latitudEpicentro
+    #     instancia.latitudHipocentro = latitudHipocentro
+    #     instancia.longitudEpicentro = longitudEpicentro
+    #     instancia.longitudHipocentro = longitudHipocentro
+    #     instancia.valorMagnitud = valorMagnitud
+    #     instancia.estadoActual = estadoActual
+    #     return instancia
     
     def __init__(self,fechaHoraFin,FechaHoraOcurrencia,latitudEpicentro,latitudHipocentro,longitudEpicentro,
-                 longitudHipocentro, valorMagnitud, estadoActual : Estado,
+                 longitudHipocentro, valorMagnitud, estadoActual,
                  cambioEstado, alcanceSismo, origenGeneracion, clasificacion,serieTemporal):
+        
         self.fechaHoraFin = fechaHoraFin
         self.FechaHoraOcurrencia = FechaHoraOcurrencia
         self.latitudEpicentro = latitudEpicentro
@@ -82,24 +83,24 @@ class EventoSismico:
 
 
     def esAutodetectado(self):
-        return self.estadoActual.esAutoDetectado()
+        return self.estadoActual.esAutodetectado()
     
     def obtenerDatosPrincipales(self):
         datos_evento = {
-        "FechaHoraOcurrencia": self.get_FechaHoraOcurrencia(),
-        "LatitudEpicentro": self.get_latitudEpicentro(),
-        "LongitudHipocentro": self.get_longitudHipocentro(),
-        "ValorMagnitud": self.get_valorMagnitud(),
-        "LongitudEpicentro": self.get_longitudEpicentro(),
-        "LatitudHipocentro": self.get_latitudHipocentro()}
+        "fechaHoraOcurrencia": self.get_FechaHoraOcurrencia(),
+        "latitudEpicentro": self.get_latitudEpicentro(),
+        "longitudHipocentro": self.get_longitudHipocentro(),
+        "valorMagnitud": self.get_valorMagnitud(),
+        "longitudEpicentro": self.get_longitudEpicentro(),
+        "latitudHipocentro": self.get_latitudHipocentro()}
         return datos_evento
 
-    def bloquearEnRevision(self, fechaActual, estadoBloqueadoEnRevision):
+    def bloquearEnRevision(self, fechaActual, estadoBloqueadoEnRevision,usuarioLogueado):
         cambioEstadoActual = self.buscarEstadoActual()
         cambioEstadoActual.setFechaHoraFin(fechaActual)
 
         self.setEstadoActual(estadoBloqueadoEnRevision)
-        cambioEstadoBloqueadoEnRevision = self.crearCambioEstado(fechaActual, estadoBloqueadoEnRevision)
+        cambioEstadoBloqueadoEnRevision = self.crearCambioEstado(fechaActual, estadoBloqueadoEnRevision,usuarioLogueado)
         self.cambioEstado.append(cambioEstadoBloqueadoEnRevision)
 
     def buscarEstadoActual(self):
@@ -111,9 +112,9 @@ class EventoSismico:
     def setEstadoActual(self, estado):
         self.estadoActual = estado
 
-    def crearCambioEstado(self, fechaHoraInicio, nuevoEstado):
-        return CambioEstado(nuevoEstado,fechaHoraInicio)
-        ## agegar el empleado al CE
+    def crearCambioEstado(self, nuevoEstado, fechaHoraInicio, usuarioLogueado):
+        return CambioEstado(nuevoEstado,fechaHoraInicio, usuarioLogueado)
+        ## agegar el empleado al CE 
 
     def getDatosRestantes(self):
         
