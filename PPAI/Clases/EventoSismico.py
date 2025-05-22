@@ -1,4 +1,6 @@
 from Clases.CambioEstado import CambioEstado
+from Clases.Estado import Estado
+
 class EventoSismico:
     def __new__(cls, fechaHoraFin,FechaHoraOcurrencia,latitudEpicentro,latitudHipocentro,longitudEpicentro,longitudHipocentro,valorMagnitud,estadoActual):
         instancia = super().__new__(cls)
@@ -13,7 +15,7 @@ class EventoSismico:
         return instancia
     
     def __init__(self,fechaHoraFin,FechaHoraOcurrencia,latitudEpicentro,latitudHipocentro,longitudEpicentro,
-                 longitudHipocentro, valorMagnitud, estadoActual,
+                 longitudHipocentro, valorMagnitud, estadoActual : Estado,
                  cambioEstado, alcanceSismo, origenGeneracion, clasificacion,serieTemporal):
         self.fechaHoraFin = fechaHoraFin
         self.FechaHoraOcurrencia = FechaHoraOcurrencia
@@ -30,7 +32,6 @@ class EventoSismico:
         self.origenGeneracion = origenGeneracion
         self.alcanceSismo = alcanceSismo
         self.clasificacion = clasificacion
-
         self.serieTemporal = []
         self.serieTemporal = serieTemporal
 
@@ -93,13 +94,13 @@ class EventoSismico:
         "LatitudHipocentro": self.get_latitudHipocentro()}
         return datos_evento
 
-    def bloquearEnRevision(self, fechaActual, bloqueadoEnRevision):
+    def bloquearEnRevision(self, fechaActual, estadoBloqueadoEnRevision):
         cambioEstadoActual = self.buscarEstadoActual()
         cambioEstadoActual.setFechaHoraFin(fechaActual)
 
-        self.setEstadoActual(bloqueadoEnRevision)
-        bloqueadoEnRevision = self.crearCambioEstado(fechaActual, bloqueadoEnRevision)
-        self.cambioEstado.append(bloqueadoEnRevision)
+        self.setEstadoActual(estadoBloqueadoEnRevision)
+        cambioEstadoBloqueadoEnRevision = self.crearCambioEstado(fechaActual, estadoBloqueadoEnRevision)
+        self.cambioEstado.append(cambioEstadoBloqueadoEnRevision)
 
     def buscarEstadoActual(self):
         for ce in self.cambioEstado:
@@ -133,10 +134,41 @@ class EventoSismico:
 
         return datosSeriesTemporalesPorEstacion
 
-    def rechazar(self,fechaActual,rechazado):
+    def rechazar(self,fechaActual,estadoRechazado):
         cambioEstadoActual = self.buscarEstadoActual()
         cambioEstadoActual.setFechaHoraFin(fechaActual)
 
-        self.setEstadoActual(rechazado)
-        rechazado = self.crearCambioEstado(fechaActual, rechazado)
-        self.cambioEstado.append(rechazado)
+        self.setEstadoActual(estadoRechazado)
+        cambioEstadoRechazado = self.crearCambioEstado(fechaActual, estadoRechazado)
+        self.cambioEstado.append(cambioEstadoRechazado)
+
+
+    """ 
+        A5: El AS no completa los datos mínimos
+        A6: Si la opción seleccionada es Confirmar evento, se actualiza el estado del evento sísmico a confirmado,
+            registrando la fecha y hora actual como fecha de confirmación. y el AS logueado como responsable
+        A7: Si la opción seleccionada es Solicitar revisión a experto, se actualiza el estado del evento sísmico a derivado a experto, 
+            registrando la fecha y hora actual, y el AS logueado
+    """
+
+    def confirmar(self,fechaActual,estadoConfirmado):
+        cambioEstadoActual = self.buscarEstadoActual()
+        cambioEstadoActual.setFechaHoraFin(fechaActual)
+
+        self.setEstadoActual(estadoConfirmado)
+        cambioEstadoConfirmado = self.crearCambioEstado(fechaActual, estadoConfirmado)
+        self.cambioEstado.append(cambioEstadoConfirmado)
+
+    def derivarARevision(self,fechaActual,estadoDerivadoARevision):
+        cambioEstadoActual = self.buscarEstadoActual()
+        cambioEstadoActual.setFechaHoraFin(fechaActual)
+
+        self.setEstadoActual(estadoDerivadoARevision)
+        cambioEstadoDerivadoARevision = self.crearCambioEstado(fechaActual, estadoDerivadoARevision)
+        self.cambioEstado.append(cambioEstadoDerivadoARevision)
+
+
+    def modificarDatos(self, magnitud,alcance,origen):
+        self.alcanceSismo.setNombre(alcance)
+        self.origenGeneracion.setNombre(origen)
+        self.set_valorMagnitud(magnitud)

@@ -1,5 +1,8 @@
+from typing import List
 from Datos.datos import *
 from datetime import datetime
+from Clases.EventoSismico import EventoSismico
+from Clases.Estado import Estado
 
 class GestorRegRevisionManual:
 # Metodos inicializacion    
@@ -7,7 +10,8 @@ class GestorRegRevisionManual:
         instancia = super().__new__(cls)
         return instancia
 
-    def __init__(self, todosEventosSismicos, todosEstados, pantalla, actualSesion):
+    def __init__(self, todosEventosSismicos, todosEstados: List[Estado], pantalla, actualSesion):
+        
         self._todosEventosSismicos = todosEventosSismicos
         self._todosEstados = todosEstados
         self._PantallaRegRevisionManual = pantalla
@@ -25,7 +29,11 @@ class GestorRegRevisionManual:
 
 
 # Metodos del Gestor
-    ## PASO 1
+
+   
+    """ 
+        PASO 1
+    """
     def opcRegRevisionManual(self):
             eventosSismicosOrdenados = self.buscarEventosSísmicosAutodetectados()
             self.buscarEmpleadoEnSesion()
@@ -36,8 +44,10 @@ class GestorRegRevisionManual:
             creo que la validacion va en pantalla, que verifique si eventosSismicosOrdenados = None entonces tire el mensaje "no hay simsos..."
             """
             self._PantallaRegRevisionManual.mostrarEventosSismicosASeleccionar(eventosSismicosOrdenados)
-
-    ## PASO 2
+   
+    """ 
+        PASO 2
+    """
     def buscarEventosSísmicosAutodetectados(self):
         eventosAutodetectados = []
         for evento in self._todosEventosSismicos:
@@ -57,8 +67,10 @@ class GestorRegRevisionManual:
     def ordenarEventos(self,eventosAutodetectados):
         eventosOrdenados = sorted(eventosAutodetectados, key=lambda item: item["FechaHoraOcurrencia"])
         return eventosOrdenados
-
-    ## PASO 3
+   
+    """ 
+        PASO 3
+    """
     def tomarSeleccionEventoSismico(self, eventoSismicoSeleccionado):
         
         ### GUARDAMOS EL EVENTO SELECCIONADO COMO ATRIBUTO
@@ -79,12 +91,14 @@ class GestorRegRevisionManual:
        
 
 
-     
-    ## PASO 4
+    
+    """ 
+        PASO 4 cambio estado
+    """
     def bloquearEventoSeleccionado(self):
         bloqueadoEnRevision = self.buscarEstadoBloqueado()
-        fechaActual = self.getFechaHoraActual
-        self.bloquearEventoSismico(self.eventoSeleccionado, fechaActual, bloqueadoEnRevision)
+        fechaActual = self.getFechaHoraActual()
+        self.bloquearEventoSismico(fechaActual, bloqueadoEnRevision)
 
     def buscarEstadoBloqueado(self):
 
@@ -97,10 +111,13 @@ class GestorRegRevisionManual:
     def getFechaHoraActual(self):
         return datetime.now()
 
-    def bloquearEventoSismico(self, eventoSeleccionado, fechaActual, bloqueadoEnRevision):
-        eventoSeleccionado.bloquearEnRevision(fechaActual, bloqueadoEnRevision)
+    def bloquearEventoSismico(self, fechaActual, estado):
+        self.eventoSismicoSeleccionado.bloquearEnRevision(fechaActual, estado,self.aSLogueado)
 
-    ## PASO 5
+   
+    """ 
+        PASO 5
+    """
     def buscarDatosEventosSisimicoSeleccionado(self):
         self.datosAlcanceClasificacionOrigen = self.eventoSeleccionado.getDatosRestantes()
         self.datosSeriesTemporalesPorEstacion = self.obtenerDatosSeriesTemporal()
@@ -124,7 +141,10 @@ class GestorRegRevisionManual:
         ## aca se retorna un grafico modo imagen creo, no se implementa la llamada al cu
         pass
 
-    ## PASO 7
+   
+    """ 
+        PASO 7
+    """
     def tomarOpcionConfirmacionMapa(self, esConfirmado):
         
         if esConfirmado:
@@ -136,50 +156,129 @@ class GestorRegRevisionManual:
 
  
 
-    ## PASO 9
+
+    """ 
+        PASO 9
+    """
     def tomarOpcionModificarDatosEvento(self, esConfirmado):
         
         """  A2. El AS modifica los datos del evento sísmico. 
-            Paso 8: permite la modificación de los siguientes datos del evento sísmico: magnitud, alcance y  origen de generación
+            (Paso 8: permite la modificación de los siguientes datos del evento sísmico: magnitud, alcance y  origen de generación)
         """
         if esConfirmado:
-            pass
+            ## ver como hacer la obtencion de estos valores
+            magnitud,alcance,origen = 0,0,0
+            self.eventoSismicoSeleccionado.modificarDatos(magnitud,alcance,origen)
 
         ## PASO 10
         self._PantallaRegRevisionManual.mostrarOpcionesParaSeleccionar()
 
 
 
-    ## PASO 11
+   
+    """ 
+        PASO 11
+    """
     def tomarSeleccionAccion(self, seleccionAccion):
         self.seleccionAccion = seleccionAccion
 
-        self.validarDatosMinimos()
-        self.buscarEstadoRechazado()
-        self.getFechaHoraActual()
-        self.rechazarEvento()
+        if not self.validarDatosMinimos():
+            pass
 
-    ## PASO 12
+        """ 
+            A3: El AS selecciona la opción Rechazar evento
+            A4: El AS selecciona la opción Solicitar revisión a experto
+            A5: El AS no completa los datos mínimos
+            A6: Si la opción seleccionada es Confirmar evento, se actualiza el estado del evento sísmico a confirmado,
+                registrando la fecha y hora actual como fecha de confirmación. y el AS logueado como responsable
+            A7: Si la opción seleccionada es Solicitar revisión a experto, se actualiza el estado del evento sísmico a derivado a experto, 
+                registrando la fecha y hora actual, y el AS logueado
+        """
+        match seleccionAccion:
+                case "1":
+                    self.confirmarEventoSeleccionado()
+                case "2":
+                    
+                    self.rechazarEventoSeleccionado()
+                case "3":
+                    self.derivarARevisionEventoSeleccionado()
+                case _:
+                    pass
+
+
+
+    ### anadir este metodo al gestor
+    def rechazarEventoSeleccionado(self):
+        estadoRechazado = self.buscarEstadoRechazado()
+        fechaActual = self.getFechaHoraActual()
+        self.rechazarEvento(fechaActual, estadoRechazado)
+   
+        """ 
+            PASO 12
+        """
     def validarDatosMinimos(self):
         if self.datosAlcanceClasificacionOrigen is not None and self.seleccionAccion is not None:
             return True
         return False
 
-    ## PASO 13
+   
+    """ 
+        PASO 13
+    """
     def buscarEstadoRechazado(self):
-        estadoRechazado = None 
         for estado in self._todosEstados:
             if estado.esAmbitoEventoSismico() and estado.esRechazado():
-                estadoRechazado = estado
+                 return estado
         
-        return estadoRechazado
+    def rechazarEvento(self,fechaActual, estadoRechazado):
+        self.eventoSismicoSeleccionado.rechazar(fechaActual, estadoRechazado,self.aSLogueado)
+
+
 
     def buscarEmpleadoEnSesion(self):
-        self.sesion.getEmpleado()
+        self.aSLogueado = self.sesion.getEmpleado()
 
-    def rechazarEvento(self):
-        self.eventoSismicoSeleccionado.rechazar()
-
-    ## FIN CU
+   
+        """ 
+            FIN CU
+        """
     def finCU(self):
         pass
+
+
+    """ 
+        A6: Si la opción seleccionada es Confirmar evento, se actualiza el estado del evento sísmico a confirmado,
+            registrando la fecha y hora actual como fecha de confirmación. y el AS logueado como responsable
+        A7: Si la opción seleccionada es Solicitar revisión a experto, se actualiza el estado del evento sísmico a derivado a experto, 
+            registrando la fecha y hora actual, y el AS logueado
+    """
+
+    ## confrimar evento
+    def confirmarEventoSeleccionado(self):
+        estadoConfirmado = self.buscarEstadoConfirmado()
+        fechaActual = self.getFechaHoraActual()
+        self.confirmarEvento(fechaActual, estadoConfirmado,self.aSLogueado)
+
+    def buscarEstadoConfirmado(self):
+        for estado in self._todosEstados:
+            if estado.esAmbitoEventoSismico() and estado.esConfirmado():
+                return estado
+        
+    def confirmarEvento(self):
+        self.eventoSismicoSeleccionado.confirmar()
+
+
+    ## derivar a solicitud evento
+
+    def derivarARevisionEventoSeleccionado(self):
+        estadoConfirmado = self.buscarEstadoDerivadoAExperto()
+        fechaActual = self.getFechaHoraActual()
+        self.derivarARevisionEvento(fechaActual, estadoDerivadoAExperto,self.aSLogueado)
+
+    def buscarEstadoDerivadoAExperto(self):
+        for estado in self._todosEstados:
+            if estado.esAmbitoEventoSismico() and estado.esDerivadoAExperto():
+                return estado
+        
+    def derivarARevisionEvento(self,fechaActual,estadoDerivadoAExperto):
+        self.eventoSismicoSeleccionado.derivarARevision(fechaActual, estadoDerivadoAExperto,self.aSLogueado)
