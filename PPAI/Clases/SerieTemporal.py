@@ -1,3 +1,8 @@
+from Datos.datos import *
+
+import random
+
+
 class SerieTemporal:
     def __init__(self, muestras):
         self._muestras = muestras  # lista de MuestraSismica
@@ -24,16 +29,21 @@ class SerieTemporal:
 
 
     def obtenerEstacionSismologica(self):
-        estacionSismologica = self.sosDeSerieTemporal(self)
+        estacionSismologica = self.sosDeSerieTemporal()
         return estacionSismologica
 
-    def sosDeSerieTemporal(self):
+    # def sosDeSerieTemporal(self):
             
-            listaSismografos = cargarSismografos()
-            for sismografo in listaSismografos:
-                if self in sismografo.seriesTemporales:
-                    return sismografo.estacionSismologica.getNombre()
+    #         listaSismografos = cargarSismografos()
+    #         for sismografo in listaSismografos:
+    #             if self in sismografo.seriesTemporales:
+    #                 return sismografo.estacionSismologica.getNombre()
 
+    def sosDeSerieTemporal(self):
+        from Datos.datos import generar_estaciones
+        est = generar_estaciones()
+        return random.choice(est)   
+        
 
 
     def getCondicionAlarma(self):

@@ -15,6 +15,8 @@ from Clases.SerieTemporal import SerieTemporal
 from Clases.TipoDeDato import TipoDeDato
 from Clases.MuestraSismica import MuestraSismica
 from Clases.DetalleMuestra import DetalleMuestra
+from Clases.EstacionSismologica import EstacionSismologica
+from Clases.Sismografo import Sismografo
 
 
 # Generador de eventos
@@ -83,10 +85,8 @@ def generar_eventos_sismicos(n):
             
         )
         eventos.append(evento) 
+        
     return eventos
-
-
-
 
 def generar_estados():
     # Crear los objetos Estado
@@ -126,10 +126,14 @@ def generar_serieTemporal():
     ## 21/02/2025 19:05:41 
     #  Velocidad de onda,7,Km/seg 
     # Velocidad de onda,7,Km/seg 
-    
+
  
     hora_muestra = fecha_inicio + timedelta(minutes=random.randint(1, 30))
-    muestra = MuestraSismica(hora_muestra, [])
+    
+    muestras = []
+    m = MuestraSismica(hora_muestra, [])
+    muestras.append(m)
+    
     valor1=5
     
     valor2=1
@@ -139,12 +143,14 @@ def generar_serieTemporal():
     detalle2= DetalleMuestra(valor2, frec)
     detalle3 = DetalleMuestra(valor3, long)
 
-    muestra.crearDetalleMuestra(detalle1)
-    muestra.crearDetalleMuestra(detalle2)
-    muestra.crearDetalleMuestra(detalle3)
+    for muestra in muestras:
+        muestra.crearDetalleMuestra(detalle1)
+        muestra.crearDetalleMuestra(detalle2)
+        muestra.crearDetalleMuestra(detalle3)
     # Crear la serie temporal
     
-    serie = SerieTemporal(muestra)
+
+    serie = SerieTemporal(muestras)
     return serie
 
     
@@ -185,3 +191,30 @@ def generar_usuario():
 def generar_sesion():
     user = generar_usuario()
     return Sesion(user)
+
+def generarEstacionSismologica():
+    # Crear 6 estaciones sismográficas
+    est_1 = EstacionSismologica("Pampa Central")
+    
+    '''est_2 = EstacionSismografica("Cordillera Norte")
+    est_3 = EstacionSismografica("Pampa Central")
+    est_4 = EstacionSismografica("Litoral Este")
+    est_5 = EstacionSismografica("Patagonia Sur")
+    est_6 = EstacionSismografica("Altiplano Andino")
+
+    # Guardarlos en una lista
+    estaciones = [est_1, est_2, est_3, est_4, est_5, est_6]'''
+    
+    return est_1
+
+# def generarSismografo(serieTemporal):
+#     estacionSismologica = generarEstacionSismologica()
+#     sismografo = Sismografo(estacionSismologica,serieTemporal)
+#     return sismografo
+
+def generar_estaciones():
+    est_3 ="Pampa Central"
+    est_4 = "Litoral Este"
+    est_5 = "Patagonia Sur"
+    est_6 = "Altiplano Andino"
+    return est_3,est_4,est_5,est_6

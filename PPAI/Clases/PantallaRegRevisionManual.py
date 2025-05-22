@@ -6,6 +6,9 @@ from tkinter.ttk import Combobox
 from Clases.GestorRegRevisionManual import * 
 from Clases.Estado import * 
 from Clases.Sesion import * 
+from tkinter import *
+from PIL import Image, ImageTk
+import os
 
 class PantallaRegRevisionManual():
     def __new__(cls):
@@ -14,6 +17,9 @@ class PantallaRegRevisionManual():
     
     def __init__(self):
         self.gestor = None
+        ruta_imagen = os.path.join(os.path.dirname(__file__), "sismograma.png")
+        self.imagen = ImageTk.PhotoImage(Image.open(ruta_imagen))
+
     
     # Esta función crea una ventana de interfaz gráfica con un botón para generar un reporte de ranking de vinos.
     def opcionRegResultadoDeRevisiónManual(self):
@@ -110,12 +116,11 @@ class PantallaRegRevisionManual():
             
         else:
             messagebox.showwarning("Selección requerida", "Por favor seleccione al menos una fila antes de enviar.")
-            
+    """   
     def mostrarDatosEventosSismicos(self, detalles):
-        """
-        Muestra una ventana con el alcance, clasificación y origen de generación de un evento sísmico.
-        detalles: lista con [alcance, clasificacion, origen_generacion]
-        """
+
+        print(detalles)
+    
         self.root = Tk()
         self.root.geometry("900x300")
         self.root.title("Red Sísmica")
@@ -128,7 +133,8 @@ class PantallaRegRevisionManual():
             ancho_columna = 150
             self.tabla_eventos.heading(encabezado, text=encabezado, anchor=CENTER)
             self.tabla_eventos.column(encabezado, width=ancho_columna, anchor=CENTER)
-        for fila_datos in detalles[:6]:
+
+        for fila_datos in detalles:
             datos_eventos = [
                 fila_datos.fechaHoraOcurrencia, fila_datos.latitudEpicentro,
                 fila_datos.longitudHipocentro, fila_datos.valorMagnitud,
@@ -155,10 +161,70 @@ class PantallaRegRevisionManual():
         self.root.mainloop()
 
         return self.seleccion_eventos
-    
+    """
+    def mostrarDatosEventosSismicos(self, DATOS):
+
+        import tkinter as tk
+        from tkinter import messagebox
+        
+        # Verificamos que la lista tenga 3 elementos
+        if len(DATOS) != 3:
+            messagebox.showerror("Error", "Se esperaban 3 datos: alcance, clasificación y origen.")
+            return
+
+        alcance, clasificacion, origen = DATOS
+
+        # Crear ventana principal
+        ventana = tk.Tk()
+        ventana.title("Datos del Evento Sísmico")
+        ventana.geometry("400x200")
+
+        # Etiquetas para mostrar los datos
+        tk.Label(ventana, text="Alcance:", font=("Arial", 12, "bold")).pack(anchor="w", padx=10, pady=(10, 0))
+        tk.Label(ventana, text=alcance, font=("Arial", 12)).pack(anchor="w", padx=20)
+
+        tk.Label(ventana, text="Clasificación:", font=("Arial", 12, "bold")).pack(anchor="w", padx=10, pady=(10, 0))
+        tk.Label(ventana, text=clasificacion, font=("Arial", 12)).pack(anchor="w", padx=20)
+
+        tk.Label(ventana, text="Origen de Generación:", font=("Arial", 12, "bold")).pack(anchor="w", padx=10, pady=(10, 0))
+        tk.Label(ventana, text=origen, font=("Arial", 12)).pack(anchor="w", padx=20)
+
+        # Botón para cerrar la ventana
+        tk.Button(ventana, text="Cerrar", command=ventana.destroy).pack(pady=15)
+
+        ventana.mainloop()
+
     def mostrarSismograma(self):
-        pass
-    
+
+
+        ventana = tk.Tk()
+        ventana.title("Sismograma")
+
+        # Cargar la imagen
+        try:
+            imagen = Image.open(self.imagen)
+            imagen = imagen.resize((500, 300))  # Ajustar tamaño si es necesario
+            imagen_tk = ImageTk.PhotoImage(imagen)
+        except Exception as e:
+            tk.messagebox.showerror("Error al cargar imagen", str(e))
+            return
+
+        # Mostrar imagen
+        etiqueta_imagen = tk.Label(ventana, image=imagen_tk)
+        etiqueta_imagen.image = imagen_tk  # Importante para que no se libere la memoria
+        etiqueta_imagen.pack(pady=10)
+
+        # Mostrar leyenda
+        etiqueta_leyenda = tk.Label(ventana, text="Sismograma por estación sismológica", font=("Arial", 12, "italic"))
+        etiqueta_leyenda.pack()
+
+        # Botón para cerrar
+        tk.Button(ventana, text="Cerrar", command=ventana.destroy).pack(pady=10)
+
+        ventana.mainloop()
+
+
+
     def habilitarOpcionVisualizarMapa(self):
         self.root = Tk()
         self.root.geometry("700x500")
