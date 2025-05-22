@@ -104,3 +104,14 @@ def generar_eventos_sismicos(n):
         )
         eventos.append(evento) 
     return eventos
+
+def generar_estados():
+    # Crear los objetos Estado
+    estado_1 = Estado("Evento Sismico", "Pendiente en revision")
+    estado_2 = Estado("Evento Sismico", "Autodetectado")
+    estado_3 = Estado("Evento Sismico", "Bloqueado en revision")
+    estado_4 = Estado("Evento Sismico", "Rechazado")
+
+    # Lista de estados, útil para insertarlos en la base de datos
+    estados = [estado_3, estado_2, estado_1, estado_4]
+    return estados
