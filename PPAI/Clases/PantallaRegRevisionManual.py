@@ -6,6 +6,8 @@ from tkinter.ttk import Combobox
 from Clases.GestorRegRevisionManual import * 
 from Clases.Estado import * 
 from Clases.Sesion import * 
+import tkinter as tk
+from tkinter import messagebox
 
 from tkinter import *
 from PIL import Image, ImageTk
@@ -163,10 +165,7 @@ class PantallaRegRevisionManual():
         return self.seleccion_eventos
     """
     def mostrarDatosEventosSismicos(self, DATOS):
-
-        import tkinter as tk
-        from tkinter import messagebox
-        
+    
         # Verificamos que la lista tenga 3 elementos
         if len(DATOS) != 3:
             messagebox.showerror("Error", "Se esperaban 3 datos: alcance, clasificación y origen.")
@@ -177,7 +176,7 @@ class PantallaRegRevisionManual():
         # Crear ventana principal
         ventana = tk.Tk()
         ventana.title("Datos del Evento Sísmico")
-        ventana.geometry("400x200")
+        ventana.geometry("700x250")
 
         # Etiquetas para mostrar los datos
         tk.Label(ventana, text="Alcance:", font=("Arial", 12, "bold")).pack(anchor="w", padx=10, pady=(10, 0))
@@ -191,6 +190,7 @@ class PantallaRegRevisionManual():
 
         # Botón para cerrar la ventana
         tk.Button(ventana, text="Cerrar", command=ventana.destroy).pack(pady=15)
+        center_window(self.root)
 
         ventana.mainloop()
 
@@ -218,7 +218,7 @@ class PantallaRegRevisionManual():
 
         # Mantener una referencia a la imagen para evitar que se borre
         label.image = imagen_tk
-
+        center_window(self.root)
         # Ejecutar la ventana
         ventana.mainloop()
 
@@ -294,44 +294,51 @@ class PantallaRegRevisionManual():
     
     def mostrarOpcionesParaSeleccionar(self):
         self.root = Tk()
-        self.root.geometry("700x500")
+        self.root.geometry("900x500")
         self.root.title("Red Sísmica")
         self.root.configure(bg="#050c57")
-
-        self.confirmado = False
 
         self.label_confirmacion = Label(self.root, text="Seleccionar una accion para realizar sobre el Evento", font=("Arial", 16), bg="#050c57", fg="white")
         self.label_confirmacion.place(relx=0.5, rely=0.4, anchor="center")
         
-        self.tomarSeleccionAccion()
-        
+        center_window(self.root)
+
+        self.accion = tk.StringVar(value="")
+
+        self.tomarSeleccionAccion()  
+
+        opcion = self.accion.get()
+        print("antes de ir al gestor llegó la opcion:", opcion)
         self.root.protocol("WM_DELETE_WINDOW", self.cerrar_press)
         center_window(self.root)
         self.root.mainloop()
-
-        if self.confirmado:
-            return True
-        else:
-            return False
-
+        self.gestor.tomarSeleccionAccion(opcion)
+        
+        
     def tomarSeleccionAccion(self):
+        def seleccionar(valor):
+            self.accion.set(valor)  # esto desbloquea wait_variable()
+
         mi_tipo_de_letra = font.Font(family="Arial", size=14, weight="bold")
 
-        self.boton_confirmar = Button(self.root, text="Confirmar", command=self.confirmar, font=mi_tipo_de_letra, fg="black")
+        self.boton_confirmar = Button(self.root, text="Confirmar", command=lambda: seleccionar("confirmado"), font=mi_tipo_de_letra, fg="black")
         self.boton_confirmar.config(height=3, width=12)
-        self.boton_confirmar.place(relx=0.35, rely=0.6, anchor="center")
+        self.boton_confirmar.place(relx=0.25, rely=0.6, anchor="center")
+        
+        self.boton_cancelar = Button(self.root, text="Rechazar", command=lambda: seleccionar("rechazado"), font=mi_tipo_de_letra, fg="black")
+        self.boton_cancelar.config(height=3, width=12)
+        self.boton_cancelar.place(relx=0.55, rely=0.6, anchor="center")
+        
+        self.boton_revision = Button(self.root, text="Solicitar revisión", command=lambda: seleccionar("revision"), font=mi_tipo_de_letra, fg="black")
+        self.boton_revision.config(height=3, width=15)
+        self.boton_revision.place(relx=0.85, rely=0.6, anchor="center")
+        
+        
 
-        self.boton_cancelar = Button(self.root, text="Cancelar", command=self.cancelar, font=mi_tipo_de_letra, fg="black")
-        self.boton_cancelar.config(height=3, width=12)
-        self.boton_cancelar.place(relx=0.65, rely=0.6, anchor="center")
+    
         
-        self.boton_cancelar = Button(self.root, text="Rechazar", command=self.cancelar, font=mi_tipo_de_letra, fg="black")
-        self.boton_cancelar.config(height=3, width=12)
-        self.boton_cancelar.place(relx=0.95, rely=0.6, anchor="center")
+            
         
-        self.boton_cancelar = Button(self.root, text="Solicitar revisión a experto", command=self.cancelar, font=mi_tipo_de_letra, fg="black")
-        self.boton_cancelar.config(height=3, width=12)
-        self.boton_cancelar.place(relx=0.95, rely=0.6, anchor="center")
     
     # Funcion para tomar el cierre de la ventana
     def cerrar_press(self):
@@ -348,6 +355,8 @@ class PantallaRegRevisionManual():
         self.confirmado = False
         self.root.quit()
     
+    
+        
 # funcion propia del lenguaje para centrar las ventanas       
 def center_window(window):
     window.update_idletasks()

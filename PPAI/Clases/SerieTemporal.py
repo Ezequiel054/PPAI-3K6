@@ -6,6 +6,7 @@ import random
 class SerieTemporal:
     def __init__(self, muestras):
         self._muestras = muestras  # lista de MuestraSismica
+        self.sismografo = muestras
 
     def obtenerMuestrasSismicas(self):
         return self._muestras

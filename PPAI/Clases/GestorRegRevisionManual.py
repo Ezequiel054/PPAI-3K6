@@ -96,7 +96,7 @@ class GestorRegRevisionManual:
         self.clasificarDatosPorEstacionSismologica()
         sismograma = self.generarSismograma()
  
-        # self._PantallaRegRevisionManual.mostrarDatosEventosSismicos(self.datosAlcanceClasificacionOrigen)
+        self._PantallaRegRevisionManual.mostrarDatosEventosSismicos(self.datosAlcanceClasificacionOrigen)
         self._PantallaRegRevisionManual.mostrarSismograma()
         
         ## PASO 6
@@ -108,6 +108,7 @@ class GestorRegRevisionManual:
     """
     def bloquearEventoSeleccionado(self):
         bloqueadoEnRevision = self.buscarEstadoBloqueado()
+        print(bloqueadoEnRevision)
         fechaActual = self.getFechaHoraActual()
         self.bloquearEventoSismico(fechaActual, bloqueadoEnRevision)
 
@@ -192,6 +193,7 @@ class GestorRegRevisionManual:
     """
     def tomarSeleccionAccion(self, seleccionAccion):
         self.seleccionAccion = seleccionAccion
+        print("llegó al paso11", self.seleccionAccion)
 
         if not self.validarDatosMinimos():
             pass
@@ -206,12 +208,12 @@ class GestorRegRevisionManual:
                 registrando la fecha y hora actual, y el AS logueado
         """
         match seleccionAccion:
-                case "1":
+                case "confirmado":
                     self.confirmarEventoSeleccionado()
-                case "2":
-                    
+                case "rechazado":
+                    print("llegó al paso12")
                     self.rechazarEventoSeleccionado()
-                case "3":
+                case "revision":
                     self.derivarARevisionEventoSeleccionado()
                 case _:
                     pass
@@ -223,6 +225,7 @@ class GestorRegRevisionManual:
         estadoRechazado = self.buscarEstadoRechazado()
         fechaActual = self.getFechaHoraActual()
         self.rechazarEvento(fechaActual, estadoRechazado)
+        self.finCU()
    
         """ 
             PASO 12
@@ -254,7 +257,7 @@ class GestorRegRevisionManual:
             FIN CU
         """
     def finCU(self):
-        pass
+        print("Fin del caso de uso")
 
 
     """ 
