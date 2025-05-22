@@ -2,6 +2,8 @@
 from datetime import datetime, timedelta
 import random
 
+from PPAI.Clases import Empleado, Estado
+
 # Entidades asociadas
 
 class ClasificacionSismo:
@@ -115,3 +117,23 @@ def generar_estados():
     # Lista de estados, útil para insertarlos en la base de datos
     estados = [estado_3, estado_2, estado_1, estado_4]
     return estados
+
+def generar_empleados():
+    empleado_1 = Empleado("Lucía", "González")
+    empleado_2 = Empleado("Carlos", "Pérez")
+    empleado_3 = Empleado("María", "Rodríguez")
+    empleado_4 = Empleado("Juan", "López")
+    empleado_5 = Empleado("Sofía", "Martínez")
+    empleado_6 = Empleado("Andrés", "Gómez")
+    empleado_7 = Empleado("Valentina", "Díaz")
+    empleado_8 = Empleado("Martín", "Ramírez")
+    empleado_9 = Empleado("Camila", "Torres")
+
+    # Agruparlos en una lista (útil para cargar en una base de datos, o iterar)
+    empleados = [
+        empleado_1, empleado_2, empleado_3,
+        empleado_4, empleado_5, empleado_6,
+        empleado_7, empleado_8, empleado_9
+    ]    
+    return empleados
+
