@@ -96,8 +96,8 @@ class GestorRegRevisionManual:
         self.clasificarDatosPorEstacionSismologica()
         sismograma = self.generarSismograma()
  
+        # self._PantallaRegRevisionManual.mostrarDatosEventosSismicos(self.datosAlcanceClasificacionOrigen)
         self._PantallaRegRevisionManual.mostrarSismograma()
-        self._PantallaRegRevisionManual.mostrarDatosEventosSismicos(self.datosAlcanceClasificacionOrigen)
         
         ## PASO 6
         self._PantallaRegRevisionManual.habilitarOpcionVisualizarMapa()

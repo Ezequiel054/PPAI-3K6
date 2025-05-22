@@ -6,9 +6,12 @@ from tkinter.ttk import Combobox
 from Clases.GestorRegRevisionManual import * 
 from Clases.Estado import * 
 from Clases.Sesion import * 
+
 from tkinter import *
 from PIL import Image, ImageTk
 import os
+import tkinter as tk
+
 
 class PantallaRegRevisionManual():
     def __new__(cls):
@@ -17,8 +20,8 @@ class PantallaRegRevisionManual():
     
     def __init__(self):
         self.gestor = None
-        ruta_imagen = os.path.join(os.path.dirname(__file__), "sismograma.png")
-        self.imagen = ImageTk.PhotoImage(Image.open(ruta_imagen))
+
+        self.ruta_imagen = os.path.join(os.path.dirname(__file__), "sismograma.jpg")
 
     
     # Esta función crea una ventana de interfaz gráfica con un botón para generar un reporte de ranking de vinos.
@@ -52,9 +55,6 @@ class PantallaRegRevisionManual():
             self.gestor = GestorRegRevisionManual(self)
             self.gestor.opcRegRevisionManual()
             
-            
-            return True
-        else:return False
   
     def mostrarEventosSismicosASeleccionar(self, datos):
         self.root = Tk()
@@ -194,34 +194,34 @@ class PantallaRegRevisionManual():
 
         ventana.mainloop()
 
+
     def mostrarSismograma(self):
-
-
+        # Crear la ventana principal
         ventana = tk.Tk()
-        ventana.title("Sismograma")
+        ventana.title("Sismograma por estación sismológica")
 
-        # Cargar la imagen
-        try:
-            imagen = Image.open(self.imagen)
-            imagen = imagen.resize((500, 300))  # Ajustar tamaño si es necesario
-            imagen_tk = ImageTk.PhotoImage(imagen)
-        except Exception as e:
-            tk.messagebox.showerror("Error al cargar imagen", str(e))
-            return
+        # Ruta relativa a la imagen (en el mismo directorio)
+        ruta_absoluta = self.ruta_imagen   # Cambiá esto por el nombre de tu archivo
+        
+        
+        # Abrir la imagen
+        imagen_pil = Image.open(ruta_absoluta)
+        imagen_tk = ImageTk.PhotoImage(imagen_pil, master=ventana)
 
-        # Mostrar imagen
-        etiqueta_imagen = tk.Label(ventana, image=imagen_tk)
-        etiqueta_imagen.image = imagen_tk  # Importante para que no se libere la memoria
-        etiqueta_imagen.pack(pady=10)
+        # Mostrar la imagen en un Label
+        label = tk.Label(ventana, image=imagen_tk)
+        label.pack()
 
-        # Mostrar leyenda
-        etiqueta_leyenda = tk.Label(ventana, text="Sismograma por estación sismológica", font=("Arial", 12, "italic"))
-        etiqueta_leyenda.pack()
+        # Agregar una leyenda
+        leyenda = tk.Label(ventana, text="Sismograma por estación sismológica")
+        leyenda.pack()
 
-        # Botón para cerrar
-        tk.Button(ventana, text="Cerrar", command=ventana.destroy).pack(pady=10)
+        # Mantener una referencia a la imagen para evitar que se borre
+        label.image = imagen_tk
 
+        # Ejecutar la ventana
         ventana.mainloop()
+
 
 
 
@@ -244,9 +244,9 @@ class PantallaRegRevisionManual():
         self.root.mainloop()
 
         if self.confirmado:
-            return True
-        else:
-            return False
+            self.confirmado = True
+        
+        self.gestor.tomarOpcionConfirmacionMapa(self.confirmado)
     
     def tomarOpcionConfirmacionMapa(self):
         mi_tipo_de_letra = font.Font(family="Arial", size=14, weight="bold")
@@ -278,9 +278,8 @@ class PantallaRegRevisionManual():
         self.root.mainloop()
 
         if self.confirmado:
-            return True
-        else:
-            return False
+            self.confirmado = True
+        self.gestor.tomarOpcionModificarDatosEvento(self.confirmado)
 
     def tomarOpcionModificarDatosEvento(self):
         mi_tipo_de_letra = font.Font(family="Arial", size=14, weight="bold")
