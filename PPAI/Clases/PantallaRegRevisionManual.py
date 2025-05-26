@@ -22,7 +22,7 @@ class PantallaRegRevisionManual():
     
     def __init__(self):
         self.gestor = None
-
+        self.seleccionaccion = "entro"
         self.ruta_imagen = os.path.join(os.path.dirname(__file__), "sismograma.jpg")
 
     
@@ -303,41 +303,47 @@ class PantallaRegRevisionManual():
         
         center_window(self.root)
 
-        self.accion = tk.StringVar(value="")
+       
+        self.tomarSeleccionAccion()
 
-        self.tomarSeleccionAccion()  
-
-        opcion = self.accion.get()
-        print("antes de ir al gestor llegó la opcion:", opcion)
         self.root.protocol("WM_DELETE_WINDOW", self.cerrar_press)
+        
         center_window(self.root)
         self.root.mainloop()
-        self.gestor.tomarSeleccionAccion(opcion)
+        self.gestor.tomarSeleccionAccion(self.seleccionaccion)
         
         
+    
     def tomarSeleccionAccion(self):
-        def seleccionar(valor):
-            self.accion.set(valor)  # esto desbloquea wait_variable()
+        
+              # esto desbloquea wait_variable()
 
         mi_tipo_de_letra = font.Font(family="Arial", size=14, weight="bold")
 
-        self.boton_confirmar = Button(self.root, text="Confirmar", command=lambda: seleccionar("confirmado"), font=mi_tipo_de_letra, fg="black")
+        self.boton_confirmar = Button(self.root, text="Confirmar", command=lambda: self.seleccionarConfirmar(), font=mi_tipo_de_letra, fg="black")
         self.boton_confirmar.config(height=3, width=12)
         self.boton_confirmar.place(relx=0.25, rely=0.6, anchor="center")
         
-        self.boton_cancelar = Button(self.root, text="Rechazar", command=lambda: seleccionar("rechazado"), font=mi_tipo_de_letra, fg="black")
+        self.boton_cancelar = Button(self.root, text="Rechazar", command=lambda: self.seleccionarRechazar(), font=mi_tipo_de_letra, fg="black")
         self.boton_cancelar.config(height=3, width=12)
         self.boton_cancelar.place(relx=0.55, rely=0.6, anchor="center")
         
-        self.boton_revision = Button(self.root, text="Solicitar revisión", command=lambda: seleccionar("revision"), font=mi_tipo_de_letra, fg="black")
+        self.boton_revision = Button(self.root, text="Solicitar revisión", command=lambda: self.seleccionarRevision(), font=mi_tipo_de_letra, fg="black")
         self.boton_revision.config(height=3, width=15)
         self.boton_revision.place(relx=0.85, rely=0.6, anchor="center")
         
-        
-
     
-        
-            
+        # self.gestor.tomarSeleccionAccion(self.accion)
+ 
+    def seleccionarConfirmar(self):
+        self.seleccionaccion = "confirmado"
+
+    def seleccionarRechazar(self):
+        print("##############################################---------------")
+        self.seleccionaccion = "rechazado"
+
+    def seleccionarRevision(self):
+        self.seleccionaccion = "revision"            
         
     
     # Funcion para tomar el cierre de la ventana

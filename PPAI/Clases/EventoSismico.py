@@ -134,12 +134,12 @@ class EventoSismico:
 
         return datosSeriesTemporalesPorEstacion
 
-    def rechazar(self,fechaActual,estadoRechazado):
+    def rechazar(self,fechaActual,estadoRechazado, user):
         cambioEstadoActual = self.buscarEstadoActual()
         cambioEstadoActual.setFechaHoraFin(fechaActual)
 
         self.setEstadoActual(estadoRechazado)
-        cambioEstadoRechazado = self.crearCambioEstado(fechaActual, estadoRechazado)
+        cambioEstadoRechazado = self.crearCambioEstado(fechaActual, estadoRechazado,user)
         self.cambioEstado.append(cambioEstadoRechazado)
 
 
@@ -151,20 +151,20 @@ class EventoSismico:
             registrando la fecha y hora actual, y el AS logueado
     """
 
-    def confirmar(self,fechaActual,estadoConfirmado):
+    def confirmar(self,fechaActual,estadoConfirmado,user):
         cambioEstadoActual = self.buscarEstadoActual()
         cambioEstadoActual.setFechaHoraFin(fechaActual)
 
         self.setEstadoActual(estadoConfirmado)
-        cambioEstadoConfirmado = self.crearCambioEstado(fechaActual, estadoConfirmado)
+        cambioEstadoConfirmado = self.crearCambioEstado(fechaActual, estadoConfirmado,user)
         self.cambioEstado.append(cambioEstadoConfirmado)
 
-    def derivarARevision(self,fechaActual,estadoDerivadoARevision):
+    def derivarARevision(self,fechaActual,estadoDerivadoARevision,user):
         cambioEstadoActual = self.buscarEstadoActual()
         cambioEstadoActual.setFechaHoraFin(fechaActual)
 
         self.setEstadoActual(estadoDerivadoARevision)
-        cambioEstadoDerivadoARevision = self.crearCambioEstado(fechaActual, estadoDerivadoARevision)
+        cambioEstadoDerivadoARevision = self.crearCambioEstado(fechaActual, estadoDerivadoARevision,user)
         self.cambioEstado.append(cambioEstadoDerivadoARevision)
 
 
@@ -172,3 +172,8 @@ class EventoSismico:
         self.alcanceSismo.setNombre(alcance)
         self.origenGeneracion.setNombre(origen)
         self.set_valorMagnitud(magnitud)
+
+    def getEstadoActual(self):
+        return self.estadoActual.getNombreEstado()
+    
+    

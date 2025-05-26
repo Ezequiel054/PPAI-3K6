@@ -7,11 +7,6 @@ from Clases.Sesion import *
 
 
 class GestorRegRevisionManual:
-# Metodos inicializacion    
-    # def __new__(cls):
-    #     instancia = super().__new__(cls)
-    #     return instancia
-
     def __init__(self, pantalla):
         
         self._todosEventosSismicos = generar_eventos_sismicos(5)
@@ -106,7 +101,12 @@ class GestorRegRevisionManual:
     """ 
         PASO 4 cambio estado
     """
+
+
     def bloquearEventoSeleccionado(self):
+        #mostrar estaco actual consola
+        self.mostrarCambiosEstado()
+
         bloqueadoEnRevision = self.buscarEstadoBloqueado()
         print(bloqueadoEnRevision)
         fechaActual = self.getFechaHoraActual()
@@ -125,6 +125,7 @@ class GestorRegRevisionManual:
 
     def bloquearEventoSismico(self, fechaActual, estado):
         self.eventoSismicoSeleccionado.bloquearEnRevision(fechaActual, estado,self._aSLogueado)
+        self.mostrarCambiosEstado()
 
    
     """ 
@@ -211,13 +212,14 @@ class GestorRegRevisionManual:
                 case "confirmado":
                     self.confirmarEventoSeleccionado()
                 case "rechazado":
-                    print("llegó al paso12")
+                    self.mostrarCambiosEstado()
                     self.rechazarEventoSeleccionado()
+                    self.mostrarCambiosEstado()
                 case "revision":
                     self.derivarARevisionEventoSeleccionado()
                 case _:
                     pass
-
+        self.finCU()
 
 
     ### anadir este metodo al gestor
@@ -225,7 +227,7 @@ class GestorRegRevisionManual:
         estadoRechazado = self.buscarEstadoRechazado()
         fechaActual = self.getFechaHoraActual()
         self.rechazarEvento(fechaActual, estadoRechazado)
-        self.finCU()
+        
    
         """ 
             PASO 12
@@ -245,7 +247,7 @@ class GestorRegRevisionManual:
                  return estado
         
     def rechazarEvento(self,fechaActual, estadoRechazado):
-        self.eventoSismicoSeleccionado.rechazar(fechaActual, estadoRechazado,self.aSLogueado)
+        self.eventoSismicoSeleccionado.rechazar(fechaActual, estadoRechazado,self._aSLogueado)
 
     
 
@@ -271,7 +273,7 @@ class GestorRegRevisionManual:
     def confirmarEventoSeleccionado(self):
         estadoConfirmado = self.buscarEstadoConfirmado()
         fechaActual = self.getFechaHoraActual()
-        self.confirmarEvento(fechaActual, estadoConfirmado,self.aSLogueado)
+        self.confirmarEvento(fechaActual, estadoConfirmado,self._aSLogueado)
 
     def buscarEstadoConfirmado(self):
         for estado in self._todosEstados:
@@ -287,7 +289,7 @@ class GestorRegRevisionManual:
     def derivarARevisionEventoSeleccionado(self):
         estadoDerivadoAExperto = self.buscarEstadoDerivadoAExperto()
         fechaActual = self.getFechaHoraActual()
-        self.derivarARevisionEvento(fechaActual, estadoDerivadoAExperto,self.aSLogueado)
+        self.derivarARevisionEvento(fechaActual, estadoDerivadoAExperto,self._aSLogueado)
 
     def buscarEstadoDerivadoAExperto(self):
         for estado in self._todosEstados:
@@ -295,7 +297,11 @@ class GestorRegRevisionManual:
                 return estado
         
     def derivarARevisionEvento(self,fechaActual,estadoDerivadoAExperto):
-        self.eventoSismicoSeleccionado.derivarARevision(fechaActual, estadoDerivadoAExperto,self.aSLogueado)
+        self.eventoSismicoSeleccionado.derivarARevision(fechaActual, estadoDerivadoAExperto,self._aSLogueado)
 
     def setAsLogueado(self, aSLogueado):
         self._aSLogueado = aSLogueado
+
+    def mostrarCambiosEstado(self):
+        estado = self.eventoSismicoSeleccionado.getEstadoActual()
+        print("Ambito Evento Sismico: Estado" + estado)
