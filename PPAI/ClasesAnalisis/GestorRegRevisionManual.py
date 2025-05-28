@@ -20,11 +20,19 @@ class GestorRegRevisionManual:
 
     # PASO 2 (6)
     def opcRegRevisionManual(self):
-        self.buscarEventosSismicosAutodetectados(self.eventosSismicos)
-        self.ordenarEventos(self.eventosAutodetectados)
-        datosEventosAutodetectados = self.obtenerDatosPrincipales(self.eventosAutodetectados)
-        seleccion = self.pantalla.mostrarEventosSismicosASeleccionar(datosEventosAutodetectados)
-        if seleccion:
+        # Alternativo = No hay eventos autodetectados
+        self.buscarEventosSismicosAutodetectados(self.eventosSismicos) # Comentar para alternativo 1
+
+        seleccion = None
+        datosEventosAutodetectados = None
+        if len(self.eventosAutodetectados) > 0:
+            self.ordenarEventos(self.eventosAutodetectados)
+            datosEventosAutodetectados = self.obtenerDatosPrincipales(self.eventosAutodetectados)
+            seleccion = self.pantalla.mostrarEventosSismicosASeleccionar(datosEventosAutodetectados)
+        else:
+            self.pantalla.noHayEventosParaMostrar()
+
+        if seleccion and datosEventosAutodetectados:
             self.eventoSeleccionado = datosEventosAutodetectados[seleccion]
 
 
@@ -154,3 +162,19 @@ class GestorRegRevisionManual:
 
     def finCU(self):
         print("Fin del CU")
+
+
+    # Alternativo = Confirmar Evento
+    def confirmarEvento(self):
+        estadoConfirmado = self.buscarEstadoConfirmado(self.estados)
+        fechaHora = self.getFechaHoraActual()
+        self.eventoSeleccionado.confirmar(estadoConfirmado, fechaHora, self.buscarEmpleadoEnSesion())
+        print("Confirmar Evento")
+
+    def buscarEstadoConfirmado(self, estados):
+        print("Buscar Estado Rechazado")
+        for est in estados:
+            if est.esConfirmado() and est.esAmbitoEventoSismico():
+                return est
+        return None
+

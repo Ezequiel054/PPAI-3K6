@@ -72,6 +72,19 @@ class PantallaRegRevisionManual:
                                    "Por favor seleccione al menos una fila antes de enviar.")
 
 
+    # Alternativo 1
+    def noHayEventosParaMostrar(self):
+        self.root = Tk()
+        self.root.geometry("800x600")
+        self.root.title("Red Sismica")
+        self.root.resizable(False, False)
+        self.root.configure(bg="#050c57")
+        Label(self.root, text="No hay eventos sismicos autodetectados", bg="#050c57",
+              font=self.fuente, fg="white").pack(expand=True)
+
+        self.root.mainloop()
+
+
     def mostrarDatosEventosSismicos(self, datos, sismogramasPorEstacion):
         print("Mostrar Datos Evento")
         self.root = Tk()
@@ -191,10 +204,10 @@ class PantallaRegRevisionManual:
     def mostrarOpcionesParaSeleccionar(self):
         self.frameOpcionActual = ttk.LabelFrame(self.root, text="Que desea realizar con el Evento Sismico?")
         botonConfirmar = Button(self.frameOpcionActual, text="Confirmar", font=self.fuente,
-                         command=self.frameOpcionActual.destroy)
+                         command=self.confirmarEvento) # ALTERNATIVO
         botonRechazar = Button(self.frameOpcionActual, text="Rechazar", font=self.fuente,
                          command=self.tomarSeleccionAccion)
-        botonDerivar = Button(self.frameOpcionActual, text="No", font=self.fuente,
+        botonDerivar = Button(self.frameOpcionActual, text="Derivar", font=self.fuente,
                          command=self.frameOpcionActual.destroy)
 
         self.frameOpcionActual.pack()
@@ -206,3 +219,8 @@ class PantallaRegRevisionManual:
 
     def tomarSeleccionAccion(self):
         self.gestor.tomarSeleccionAccion()
+
+
+    # Alternativo = Confirmar Evento
+    def confirmarEvento(self):
+        self.gestor.confirmarEvento()

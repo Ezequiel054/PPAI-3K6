@@ -18,3 +18,8 @@ class Estado:
 
     def esAmbitoEventoSismico(self):
         return self.ambito.lower() == "evento sismico"
+
+
+    # Alternativo = Confirmar Evento
+    def esConfirmado(self):
+        return self.nombreEstado.lower() == "confirmado"

@@ -39,7 +39,8 @@ estados = [
     Estado("Evento Sismico", "Autodetectado"),
     Estado("Evento Sismico", "Bloqueado en revision"),
     Estado("Evento Sismico", "Rechazado"),
-    Estado("Evento Sismico", "Derivado a experto")
+    Estado("Evento Sismico", "Derivado a experto"),
+    Estado("Evento Sismico", "Confirmado")
 ]
 
 tiposDeDatos = [
