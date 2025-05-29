@@ -172,11 +172,14 @@ class PantallaRegRevisionManual:
     def habilitarOpcionVisualizarMapa(self):
         self.frameOpcionActual = ttk.Frame(self.root)
         labelMapa = Label(self.frameOpcionActual, text="Desea visualizar en un mapa?", font=self.fuente)
+        botonSi = Button(self.frameOpcionActual, text="Si", font=self.fuente,
+                         command=self.tomarOpcionConfirmacionMapa)
         botonNo = Button(self.frameOpcionActual, text="No", font=self.fuente,
                              command=self.tomarOpcionConfirmacionMapa)
-        self.frameOpcionActual.pack()
-        labelMapa.pack()
-        botonNo.pack()
+        self.frameOpcionActual.pack(anchor="center")
+        labelMapa.grid(row=0, column=0, columnspan=2)
+        botonSi.grid(row=1, column=0, sticky="nsew")
+        botonNo.grid(row=1, column= 1, sticky="nsew")
 
 
     def tomarOpcionConfirmacionMapa(self):
@@ -188,11 +191,14 @@ class PantallaRegRevisionManual:
     def habilitarOpcionModificacionDatosEvento(self):
         self.frameOpcionActual = ttk.Frame(self.root)
         labelModificar = Label(self.frameOpcionActual, text="Desea modificar los datos?", font=self.fuente)
+        botonSi = Button(self.frameOpcionActual, text="Si", font=self.fuente,
+                         command=self.tomarOpcionModificarDatosEvento)
         botonNo = Button(self.frameOpcionActual, text="No", font=self.fuente,
                          command=self.tomarOpcionModificarDatosEvento)
         self.frameOpcionActual.pack()
-        labelModificar.pack()
-        botonNo.pack()
+        labelModificar.grid(row=0, column=0, columnspan=2)
+        botonSi.grid(row=1, column=0, sticky="nsew")
+        botonNo.grid(row=1, column= 1, sticky="nsew")
 
 
     def tomarOpcionModificarDatosEvento(self):
@@ -219,8 +225,10 @@ class PantallaRegRevisionManual:
 
     def tomarSeleccionAccion(self):
         self.gestor.tomarSeleccionAccion()
+        self.root.destroy()
 
 
     # Alternativo = Confirmar Evento
     def confirmarEvento(self):
         self.gestor.confirmarEvento()
+        self.root.destroy()
