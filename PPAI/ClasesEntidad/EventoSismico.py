@@ -69,9 +69,10 @@ class EventoSismico:
 
 
     def obtenerDatosSerieTemporal(self):
+        # Devuelve array con las series, y datos a presentar de cada serie
         series = []
         for ser in self.serieTemporal:
-            series.append(ser.getDatos())
+            series.append([ser, ser.getDatos()]) # Cada elemento de array es: [serie, datosAPresentar]
         return series
 
 

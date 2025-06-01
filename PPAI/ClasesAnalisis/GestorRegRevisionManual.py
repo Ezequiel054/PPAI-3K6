@@ -16,6 +16,9 @@ class GestorRegRevisionManual:
 
         self.sismografos = dataSismografos # De data
         self.sesion = dataSesion # De data
+        self.empleadoEnSesion = None
+
+        self.series = []
 
 
     # PASO 2 (6)
@@ -23,10 +26,12 @@ class GestorRegRevisionManual:
         # Alternativo = No hay eventos autodetectados
         self.buscarEventosSismicosAutodetectados(self.eventosSismicos) # Comentar para alternativo 1
 
+        self.empleadoEnSesion = self.buscarEmpleadoEnSesion()
+
         seleccion = None
         datosEventosAutodetectados = None
         if len(self.eventosAutodetectados) > 0:
-            self.ordenarEventos(self.eventosAutodetectados)
+            self.eventosAutodetectados = self.ordenarEventos(self.eventosAutodetectados)
             datosEventosAutodetectados = self.obtenerDatosPrincipales(self.eventosAutodetectados)
             seleccion = self.pantalla.mostrarEventosSismicosASeleccionar(datosEventosAutodetectados)
         else:
@@ -60,8 +65,8 @@ class GestorRegRevisionManual:
 
     def ordenarEventos(self, eventos):
         print("Ordenando Eventos")
-        if not eventos:
-            return sorted(eventos, key=lambda e:e.fechaHoraOcurrencia)
+        if eventos:
+            return sorted(eventos, key=lambda e: e.fechaHoraOcurrencia)
 
 
     # PASO 4 y 5 (8 y 9)
@@ -69,6 +74,12 @@ class GestorRegRevisionManual:
         self.eventoSeleccionado = self.eventosAutodetectados[indice]
         self.bloquearEventoSeleccionado(self.eventoSeleccionado)
         datosYSerieEvento = self.buscarDatosEventoSismicoSeleccionado(self.eventoSeleccionado)
+        # datosYSerieEvento = [datosEvento, [ [serie1, datosSerie1], [serie2, datosSerie2] ] ]
+        self.series = []
+        for i in range(0, len(datosYSerieEvento[1])):
+            self.series.append(datosYSerieEvento[1][i][0])
+            datosYSerieEvento[1][i] = datosYSerieEvento[1][i][1]
+
         seriesPorEstacion = self.clasificarDatosPorEstacionSismografa(self.sismografos)
         sismogramasPorEst = self.generarSismografa(seriesPorEstacion)
 
@@ -78,7 +89,7 @@ class GestorRegRevisionManual:
     def bloquearEventoSeleccionado(self, evento):
         estadoBloqueadoEnRevision = self.buscarEstadoBloqueado()
         fecha = self.getFechaHoraActual()
-        evento.bloquearEnRevision(estadoBloqueadoEnRevision, fecha, self.buscarEmpleadoEnSesion())
+        evento.bloquearEnRevision(estadoBloqueadoEnRevision, fecha, self.empleadoEnSesion)
         print("Bloquear Evento")
 
 
@@ -107,12 +118,14 @@ class GestorRegRevisionManual:
         return series
 
 
-    def clasificarDatosPorEstacionSismografa(self, sismogramas):
+    def clasificarDatosPorEstacionSismografa(self, sismografos):
         seriePorEstacion = []
-        for sis in sismogramas:
+        for sis in sismografos:
             estacionSismologica = sis.getEstacionSismologica()
             serie = sis.getSerieTemporal()
-            seriePorEstacion.append([estacionSismologica, serie])
+            for ser in self.series:
+                if sis.sosDeSerieTemporal(ser):
+                    seriePorEstacion.append([estacionSismologica, serie])
         return seriePorEstacion
 
 
@@ -149,7 +162,7 @@ class GestorRegRevisionManual:
     def rechazarEvento(self):
         estadoRechazado = self.buscarEstadoRechazado(self.estados)
         fechaHora = self.getFechaHoraActual()
-        self.eventoSeleccionado.rechazar(estadoRechazado, fechaHora, self.buscarEmpleadoEnSesion())
+        self.eventoSeleccionado.rechazar(estadoRechazado, fechaHora, self.empleadoEnSesion)
         print("Rechazar Evento")
 
     def buscarEstadoRechazado(self, estados):
@@ -168,7 +181,7 @@ class GestorRegRevisionManual:
     def confirmarEvento(self):
         estadoConfirmado = self.buscarEstadoConfirmado(self.estados)
         fechaHora = self.getFechaHoraActual()
-        self.eventoSeleccionado.confirmar(estadoConfirmado, fechaHora, self.buscarEmpleadoEnSesion())
+        self.eventoSeleccionado.confirmar(estadoConfirmado, fechaHora, self.empleadoEnSesion)
         print("Confirmar Evento")
 
     def buscarEstadoConfirmado(self, estados):
