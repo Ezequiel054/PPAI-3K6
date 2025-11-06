@@ -7,6 +7,7 @@ from ClasesEntidad.DetalleMuestraSismica import DetalleMuestraSismica
 from ClasesEntidad.Empleado import Empleado
 from ClasesEntidad.EstacionSismologica import EstacionSismologica
 from ClasesEntidad.Estado import Estado
+from ClasesEntidad.State.AutoDetectado import AutoDetectado
 from ClasesEntidad.EventoSismico import EventoSismico
 from ClasesEntidad.MuestraSismica import MuestraSismica
 from ClasesEntidad.OrigenDeGeneracion import OrigenDeGeneracion
@@ -35,12 +36,12 @@ alcances = [
 ]
 
 estados = [
-    Estado("Evento Sismico", "Pendiente en revision"),
-    Estado("Evento Sismico", "Autodetectado"),
-    Estado("Evento Sismico", "Bloqueado en revision"),
-    Estado("Evento Sismico", "Rechazado"),
-    Estado("Evento Sismico", "Derivado a experto"),
-    Estado("Evento Sismico", "Confirmado")
+    AutoDetectado("Evento Sismico"),
+    AutoDetectado("Evento Sismico"),
+    AutoDetectado("Evento Sismico"),
+    AutoDetectado("Evento Sismico"),
+    AutoDetectado("Evento Sismico"),
+    AutoDetectado("Evento Sismico")
 ]
 
 tiposDeDatos = [

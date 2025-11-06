@@ -3,7 +3,7 @@ from ClasesEntidad.CambioEstado import CambioEstado
 class EventoSismico:
     def __init__(self, fechHorOcurr, fechHorFin, latEpicentro, latHipocentro,
                  longHipocentro, longEpicentro, valorMagnitud,
-                 clasif, origen, alcance, serieTemp, estAct, cambioEst):
+                 clasif, origen, alcance, serieTemp, estAct, cambiosEst):
         # Valores
         self.fechaHoraOcurrencia = fechHorOcurr
         self.fechaHoraFin = fechHorFin
@@ -19,7 +19,7 @@ class EventoSismico:
         self.alcanceSismo = alcance
         self.serieTemporal = serieTemp
         self.estadoActual = estAct
-        self.cambioEstado = cambioEst
+        self.cambiosEstado = cambiosEst
 
 
     def esAutodetectado(self):
@@ -39,14 +39,22 @@ class EventoSismico:
         return datosEvento
 
 
-    def bloquearEnRevision(self, estadoBloqueado, fecha, empleado):
-        self.buscarEstadoActual(fecha)
-        self.setEstadoActual(estadoBloqueado)
-        self.cambioEstado.append(self.crearCambioEstado(fecha, estadoBloqueado, empleado))
+    def bloquearEnRevision(self, fecha, empleado):
+        self.estadoActual.bloquearEnRevision(fecha, empleado, self.cambiosEstado, self)   
+        # self.buscarEstadoActual(fecha)
+        # self.setEstadoActual(estadoBloqueado)
+        # self.cambioEstado.append(self.crearCambioEstado(fecha, estadoBloqueado, empleado))
+
+        # self.estadoActual.bloquearEnRevision(fecha,empleado,self.cambioEstado,self)
+
+
+    def agregarCambioEstado(self,nuevoCambioEstado):
+        self.cambiosEstado.append(nuevoCambioEstado)
+
 
 
     def buscarEstadoActual(self, fechaFin):
-        for cambioEst in self.cambioEstado:
+        for cambioEst in self.cambiosEstado:
             if cambioEst.esEstadoActual():
                 cambioEst.setFechaHoraFin = fechaFin
 
@@ -79,10 +87,10 @@ class EventoSismico:
     def rechazar(self, estadoRechazado, fecha, empleado):
         self.buscarEstadoActual(fecha)
         self.setEstadoActual(estadoRechazado)
-        self.cambioEstado.append(self.crearCambioEstado(fecha, estadoRechazado, empleado))
+        self.cambiosEstado.append(self.crearCambioEstado(fecha, estadoRechazado, empleado))
 
 
     def confirmar(self, estadoConfirmado, fecha, empleado):
         self.buscarEstadoActual(fecha)
         self.setEstadoActual(estadoConfirmado)
-        self.cambioEstado.append(self.crearCambioEstado(fecha, estadoConfirmado, empleado))
+        self.cambiosEstado.append(self.crearCambioEstado(fecha, estadoConfirmado, empleado))

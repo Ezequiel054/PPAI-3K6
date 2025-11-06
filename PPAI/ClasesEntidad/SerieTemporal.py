@@ -18,3 +18,9 @@ class SerieTemporal:
 
     def obtenerMuestrasSismicas(self, muestra):
         return muestra.getDatos()
+    
+    def obtenerSismografo(self, sismografos):
+        for sis in sismografos:
+            if (sis.sosDeSerieTemporal(self)):
+                return sis
+

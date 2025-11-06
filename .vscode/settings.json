@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "c:\\users\\usuario\\appdata\\roaming\\python\\python38\\site-packages",
+        "./PPAI"
+    ]
+}

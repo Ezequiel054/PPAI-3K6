@@ -1,25 +1,40 @@
-class Estado:
-    def __init__(self, ambito, nombreEstado):
-        self.ambito = ambito
-        self.nombreEstado = nombreEstado
+from abc import ABC, abstractmethod
 
+class Estado(ABC):
+    def __init__(self, ambito):
+        self.ambito = ambito
+        self.nombreEstado = ""
 
     def esAutodetectado(self):
-        return self.nombreEstado.lower() == "autodetectado"
-
+        print("Este estado no puede recibir esa operacion")
 
     def esBloqueadoEnRevision(self):
-        return self.nombreEstado.lower() == "bloqueado en revision"
-
-
+        print("Este estado no puede recibir esa operacion")
+    
     def esRechazado(self):
-        return self.nombreEstado.lower() == "rechazado"
-
-
+        print("Este estado no puede recibir esa operacion")
+    
     def esAmbitoEventoSismico(self):
-        return self.ambito.lower() == "evento sismico"
-
-
-    # Alternativo = Confirmar Evento
+        print("Este estado no puede recibir esa operacion")
+    
     def esConfirmado(self):
-        return self.nombreEstado.lower() == "confirmado"
+        print("Este estado no puede recibir esa operacion")
+
+    # def esAutodetectado(self):
+    #     return self.nombreEstado.lower() == "autodetectado"
+
+    # def esBloqueadoEnRevision(self):
+    #     return self.nombreEstado.lower() == "bloqueado en revision"
+
+
+    # def esRechazado(self):
+    #     return self.nombreEstado.lower() == "rechazado"
+
+
+    # def esAmbitoEventoSismico(self):
+    #     return self.ambito.lower() == "evento sismico"
+
+
+    # # Alternativo = Confirmar Evento
+    # def esConfirmado(self):
+    #     return self.nombreEstado.lower() == "confirmado"

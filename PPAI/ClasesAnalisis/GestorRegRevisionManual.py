@@ -18,8 +18,6 @@ class GestorRegRevisionManual:
         self.sesion = dataSesion # De data
         self.empleadoEnSesion = None
 
-        self.series = []
-
 
     # PASO 2 (6)
     def opcRegRevisionManual(self):
@@ -75,12 +73,12 @@ class GestorRegRevisionManual:
         self.bloquearEventoSeleccionado(self.eventoSeleccionado)
         datosYSerieEvento = self.buscarDatosEventoSismicoSeleccionado(self.eventoSeleccionado)
         # datosYSerieEvento = [datosEvento, [ [serie1, datosSerie1], [serie2, datosSerie2] ] ]
-        self.series = []
+        series = []
         for i in range(0, len(datosYSerieEvento[1])):
-            self.series.append(datosYSerieEvento[1][i][0])
+            series.append(datosYSerieEvento[1][i][0])
             datosYSerieEvento[1][i] = datosYSerieEvento[1][i][1]
 
-        seriesPorEstacion = self.clasificarDatosPorEstacionSismografa(self.sismografos)
+        seriesPorEstacion = self.clasificarDatosPorEstacionSismografa(self.sismografos, series)
         sismogramasPorEst = self.generarSismografa(seriesPorEstacion)
 
         self.pantalla.mostrarDatosEventosSismicos(datosYSerieEvento, sismogramasPorEst)
@@ -89,7 +87,7 @@ class GestorRegRevisionManual:
     def bloquearEventoSeleccionado(self, evento):
         estadoBloqueadoEnRevision = self.buscarEstadoBloqueado()
         fecha = self.getFechaHoraActual()
-        evento.bloquearEnRevision(estadoBloqueadoEnRevision, fecha, self.empleadoEnSesion)
+        evento.bloquearEnRevision(fecha, self.empleadoEnSesion)
         print("Bloquear Evento")
 
 
@@ -118,15 +116,22 @@ class GestorRegRevisionManual:
         return series
 
 
-    def clasificarDatosPorEstacionSismografa(self, sismografos):
-        seriePorEstacion = []
-        for sis in sismografos:
-            estacionSismologica = sis.getEstacionSismologica()
-            serie = sis.getSerieTemporal()
-            for ser in self.series:
-                if sis.sosDeSerieTemporal(ser):
-                    seriePorEstacion.append([estacionSismologica, serie])
-        return seriePorEstacion
+    def clasificarDatosPorEstacionSismografa(self, sismografos, seriesObtenidas):
+        seriesPorEstacion = {}
+        for serie in seriesObtenidas:
+            estacionSismologica = serie.obtenerSismografo(sismografos).getEstacionSismologica()
+
+            if estacionSismologica not in seriesPorEstacion:
+                seriesPorEstacion[estacionSismologica] = []
+            seriesPorEstacion[estacionSismologica].append(serie)
+        
+        # Convertir diccionario a array
+        arraySeriesPorEstacion = [[estacion, series] for estacion, series in seriesPorEstacion.items()]
+            # serie = sis.getSerieTemporal()
+            # for ser in self.series:
+            #     if sis.sosDeSerieTemporal(ser):
+            #         seriePorEstacion.append([estacionSismologica, serie])
+        return arraySeriesPorEstacion
 
 
     def generarSismografa(self, seriesPorEstacion):
