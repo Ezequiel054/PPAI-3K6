@@ -61,25 +61,25 @@ detallesMuestra = [
 ]
 
 muestras = [
-    [MuestraSismica("2025-05-20 20:15", detallesMuestra[0]),
-    MuestraSismica("2025-05-20 20:20", detallesMuestra[1])],
+    [MuestraSismica("2025-11-06 20:15", detallesMuestra[0]),
+    MuestraSismica("2025-11-06 20:20", detallesMuestra[1])],
 
     [MuestraSismica("2024-10-20 16:40", detallesMuestra[0]),
     MuestraSismica("2024-10-20 16:45", detallesMuestra[1])]
 ]
 
 series = [
-    SerieTemporal(False, "2025-05-20 20:15", "2025-05-20 20:15",
+    SerieTemporal(False, "2025-11-06 20:10", "2025-11-06 20:11",
                   "5", muestras[0]),
     SerieTemporal(False, "2025-05-20 20:15", "2025-05-20 20:15",
                   "5", muestras[1])
 ]
 
 eventosSismicos = [
-    EventoSismico("2025-05-20 20:15", "2025-05-20 20:20", 100,
+    EventoSismico("2025-11-06 20:15", "2025-11-06 20:20", 100,
                   100,100, 100, 6,
                   clasificaciones[0], origenes[0], alcances[0], [series[0]], estados[1], []),
-    EventoSismico("2024-10-20 16:40", "2024-05-20 16:50", 65,
+    EventoSismico("2024-11-05 16:40", "2024-11-05 16:50", 65,
                   65,65, 65, 4,
                   clasificaciones[1], origenes[1], alcances[0], [series[1]], estados[1], []),
     EventoSismico("2025-01-10 06:00", "2025-01-10 06:05", 87.5,
@@ -95,19 +95,19 @@ eventosSismicos = [
 ]
 
 estaciones = [
-    EstacionSismologica("001", "Estacion 1", 100, 100,
+    EstacionSismologica("001", "Estacion Pedro ", 100, 100,
                         "10", "Doc",
                         "2024-12-21"),
-    EstacionSismologica("001", "Estacion 2", 100, 100,
+    EstacionSismologica("001", "Estacion Ezequiel", 100, 100,
                         "10", "Doc",
                         "2024-12-21")
 ]
 
 sismografos = [
     Sismografo("2024-12-22", "001", "7156",
-               estaciones[0], series[0]),
+               estaciones[0], series[1]),
     Sismografo("2024-12-22", "002", "7157",
-               estaciones[1], series[1])
+               estaciones[1], series[0])
 ]
 
 empleados = [

@@ -53,20 +53,20 @@ class EventoSismico:
 
 
 
-    def buscarEstadoActual(self, fechaFin):
-        for cambioEst in self.cambiosEstado:
-            if cambioEst.esEstadoActual():
-                cambioEst.setFechaHoraFin = fechaFin
+    # def buscarEstadoActual(self, fechaFin):
+    #     for cambioEst in self.cambiosEstado:
+    #         if cambioEst.esEstadoActual():
+    #             cambioEst.setFechaHoraFin = fechaFin
 
 
     def setEstadoActual(self, estado):
         self.estadoActual = estado
 
 
-    def crearCambioEstado(self, fecha, estado, empleado):
-        cambioEstado = CambioEstado(fechaHoraInicio= fecha, fechaHoraFin=None,
-                                    estado=estado, responsableInspeccion=empleado)
-        return cambioEstado
+    # def crearCambioEstado(self, fecha, estado, empleado):
+    #     cambioEstado = CambioEstado(fechaHoraInicio= fecha, fechaHoraFin=None,
+    #                                 estado=estado, responsableInspeccion=empleado)
+    #     return cambioEstado
 
 
     def getDatosRestantes(self):
@@ -84,13 +84,19 @@ class EventoSismico:
         return series
 
 
-    def rechazar(self, estadoRechazado, fecha, empleado):
-        self.buscarEstadoActual(fecha)
-        self.setEstadoActual(estadoRechazado)
-        self.cambiosEstado.append(self.crearCambioEstado(fecha, estadoRechazado, empleado))
+    # def rechazar(self, estadoRechazado, fecha, empleado):
+    #     self.buscarEstadoActual(fecha)
+    #     self.setEstadoActual(estadoRechazado)
+    #     self.cambiosEstado.append(self.crearCambioEstado(fecha, estadoRechazado, empleado))
 
 
     def confirmar(self, estadoConfirmado, fecha, empleado):
         self.buscarEstadoActual(fecha)
         self.setEstadoActual(estadoConfirmado)
         self.cambiosEstado.append(self.crearCambioEstado(fecha, estadoConfirmado, empleado))
+
+
+
+    def rechazarEvento(self,fecha,empleado):
+        self.estadoActual.rechazar(fecha, empleado, self.cambiosEstado, self)   
+

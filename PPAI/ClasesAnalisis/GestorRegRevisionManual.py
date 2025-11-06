@@ -70,7 +70,12 @@ class GestorRegRevisionManual:
     # PASO 4 y 5 (8 y 9)
     def tomarSeleccionEventoSismico(self, indice):
         self.eventoSeleccionado = self.eventosAutodetectados[indice]
+
+        print(self.eventoSeleccionado.estadoActual.nombreEstado)
         self.bloquearEventoSeleccionado(self.eventoSeleccionado)
+
+        print(self.eventoSeleccionado.estadoActual.nombreEstado)
+
         datosYSerieEvento = self.buscarDatosEventoSismicoSeleccionado(self.eventoSeleccionado)
         # datosYSerieEvento = [datosEvento, [ [serie1, datosSerie1], [serie2, datosSerie2] ] ]
         series = []
@@ -85,7 +90,7 @@ class GestorRegRevisionManual:
 
 
     def bloquearEventoSeleccionado(self, evento):
-        estadoBloqueadoEnRevision = self.buscarEstadoBloqueado()
+        # estadoBloqueadoEnRevision = self.buscarEstadoBloqueado()
         fecha = self.getFechaHoraActual()
         evento.bloquearEnRevision(fecha, self.empleadoEnSesion)
         print("Bloquear Evento")
@@ -157,7 +162,9 @@ class GestorRegRevisionManual:
     # PASO 12 Y 13 (16 Y 17)
     def tomarSeleccionAccion(self):
         self.validarDatosMinimos()
+        print(self.eventoSeleccionado.estadoActual.nombreEstado)
         self.rechazarEvento()
+        print(self.eventoSeleccionado.estadoActual.nombreEstado)
         self.finCU()
 
 
@@ -165,9 +172,9 @@ class GestorRegRevisionManual:
         pass
 
     def rechazarEvento(self):
-        estadoRechazado = self.buscarEstadoRechazado(self.estados)
+        #estadoRechazado = self.buscarEstadoRechazado(self.estados)
         fechaHora = self.getFechaHoraActual()
-        self.eventoSeleccionado.rechazar(estadoRechazado, fechaHora, self.empleadoEnSesion)
+        self.eventoSeleccionado.rechazarEvento(fechaHora, self.empleadoEnSesion)
         print("Rechazar Evento")
 
     def buscarEstadoRechazado(self, estados):
