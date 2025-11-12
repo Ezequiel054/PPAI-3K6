@@ -20,21 +20,3 @@ class Estado(ABC):
     def esConfirmado(self):
         print("Este estado no puede recibir esa operacion")
 
-    # def esAutodetectado(self):
-    #     return self.nombreEstado.lower() == "autodetectado"
-
-    # def esBloqueadoEnRevision(self):
-    #     return self.nombreEstado.lower() == "bloqueado en revision"
-
-
-    # def esRechazado(self):
-    #     return self.nombreEstado.lower() == "rechazado"
-
-
-    # def esAmbitoEventoSismico(self):
-    #     return self.ambito.lower() == "evento sismico"
-
-
-    # # Alternativo = Confirmar Evento
-    # def esConfirmado(self):
-    #     return self.nombreEstado.lower() == "confirmado"

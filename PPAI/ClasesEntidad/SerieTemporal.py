@@ -22,5 +22,5 @@ class SerieTemporal:
     def obtenerSismografo(self, sismografos):
         for sis in sismografos:
             if (sis.sosDeSerieTemporal(self)):
-                return sis
+                return sis.getEstacionSismologica()
 

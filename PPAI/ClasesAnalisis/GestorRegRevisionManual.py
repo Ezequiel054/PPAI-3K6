@@ -124,7 +124,7 @@ class GestorRegRevisionManual:
     def clasificarDatosPorEstacionSismografa(self, sismografos, seriesObtenidas):
         seriesPorEstacion = {}
         for serie in seriesObtenidas:
-            estacionSismologica = serie.obtenerSismografo(sismografos).getEstacionSismologica()
+            estacionSismologica = serie.obtenerSismografo(sismografos)
 
             if estacionSismologica not in seriesPorEstacion:
                 seriesPorEstacion[estacionSismologica] = []
