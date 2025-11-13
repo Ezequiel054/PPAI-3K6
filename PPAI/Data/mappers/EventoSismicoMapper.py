@@ -14,7 +14,7 @@ def model_to_evento(model):
     if model is None:
         return None
 
-    return EventoSismico(
+    Evento = EventoSismico(
         model.fechaHoraOcurrencia,
         model.fechaHoraFin,
         model.latitudEpicentro,
@@ -30,6 +30,8 @@ def model_to_evento(model):
         [model_to_cambio(c) for c in getattr(model, "cambiosEstado", [])]
     )
 
+    print("Evento mapeado:", Evento)
+    return Evento
 
 def evento_to_model(obj):
     """Convierte un EventoSismico (entidad) -> EventoSismicoModel (modelo SQLAlchemy)."""

@@ -22,6 +22,9 @@ class EventoSismico:
         self.cambiosEstado = cambiosEst
 
 
+    def __str__(self):
+        return f"EventoSismico({self.fechaHoraOcurrencia}, {self.latitudEpicentro}, {self.longitudEpicentro}, {self.valorMagnitud})"
+
     def esAutodetectado(self):
         return self.estadoActual.esAutodetectado()
 

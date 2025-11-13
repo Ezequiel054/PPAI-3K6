@@ -28,5 +28,6 @@ class EventoSismicoModel(Base):
     cambiosEstado = relationship("CambioEstadoModel", back_populates="eventoSismico", cascade="all, delete-orphan")
 
     def __repr__(self):
-        return f"<EventoSismico(id={self.id}, magnitud={self.valorMagnitud})>"
+        return     f"<EventoSismicoModel(id={self.id}, fechaHoraOcurrencia={self.fechaHoraOcurrencia}, valorMagnitud={self.valorMagnitud},fechaHoraFin={self.fechaHoraFin}, " \
+               f"latitudEpicentro={self.latitudEpicentro}, latitudHipocentro={self.latitudHipocentro}, serieTemporal={self.series})>"
 

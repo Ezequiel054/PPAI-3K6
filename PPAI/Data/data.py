@@ -71,6 +71,10 @@ def cargar_entidades(model_class, mapper_func):
     dao = BaseDAO(model_class)
     modelos = dao.get_all()
     entidades = [mapper_func(m) for m in modelos]
+
+    if model_class == EventoSismicoModel:
+        for e in modelos:
+            print("Evento cargado:", e)
     dao.close()
     return entidades
 
@@ -84,7 +88,10 @@ tiposDeDatos = cargar_entidades(TipoDeDatoModel, model_to_tipo)
 detallesMuestra = cargar_entidades(DetalleMuestraSismicaModel, model_to_detalle)
 muestras = cargar_entidades(MuestraSismicaModel, model_to_muestra)
 series = cargar_entidades(SerieTemporalModel, model_to_serie)
+
+
 eventosSismicos = cargar_entidades(EventoSismicoModel, model_to_evento)
+
 estaciones = cargar_entidades(EstacionSismologicaModel, model_to_estacion)
 sismografos = cargar_entidades(SismografoModel, model_to_sismografo)
 empleados = cargar_entidades(EmpleadoModel, model_to_empleado)
@@ -93,16 +100,16 @@ sesiones = cargar_entidades(SesionModel, model_to_sesion)
 
 
 # --- Ejemplo de uso ---
-print("\n📊 Clasificaciones cargadas:")
-for c in clasificaciones:
-    print(" -", c)
+# print("\n📊 Clasificaciones cargadas:")
+# for c in clasificaciones:
+#     print(" -", c)
 
-print("\n🌋 Orígenes cargados:")
-for o in origenes:
-    print(" -", o)
+# print("\n🌋 Orígenes cargados:")
+# for o in origenes:
+#     print(" -", o)
 
-print("\n📈 Eventos sismicos:")
-for e in eventosSismicos:
-    print(" -", e)
+# print("\n📈 Eventos sismicos:")
+# for e in eventosSismicos:
+#     print(" -", e)
 
-print("\n✅ Carga completa de entidades desde la base de datos.")
+# print("\n✅ Carga completa de entidades desde la base de datos.")

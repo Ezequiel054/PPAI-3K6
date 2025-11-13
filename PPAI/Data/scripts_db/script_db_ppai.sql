@@ -14,6 +14,7 @@ CREATE TABLE AlcanceSismo (
 
 CREATE TABLE ClasificacionSismo (
 	id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100),
     kmProfundidadDesde DECIMAL(10, 2),
     kmProfundidadHasta DECIMAL(10, 2)
 );

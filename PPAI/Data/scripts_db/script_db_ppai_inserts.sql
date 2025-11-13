@@ -7,10 +7,10 @@ INSERT INTO AlcanceSismo (nombre, descripcion) VALUES
 ('Tele-sismo', 'Más de 1000 km del epicentro');
 
 -- ClasificacionSismo
-INSERT INTO ClasificacionSismo (kmProfundidadDesde, kmProfundidadHasta) VALUES
-(0, 60),   -- Superficial
-(61, 300), -- Intermedio
-(301, 650);-- Profundo
+INSERT INTO ClasificacionSismo (nombre, kmProfundidadDesde, kmProfundidadHasta) VALUES
+("Superficial", 0, 60),
+("Intermedio", 61, 300),
+("Profundo", 301, 650);
 
 -- OrigenDeGeneracion
 INSERT INTO OrigenDeGeneracion (nombre, descripcion) VALUES
@@ -20,10 +20,10 @@ INSERT INTO OrigenDeGeneracion (nombre, descripcion) VALUES
 
 -- Estado (incluyendo los "Autodetectado")
 INSERT INTO Estado (ambito, nombreEstado) VALUES
-('Evento Sismico', 'Autodetectado'),
-('Evento Sismico', 'En evaluación'),
+('Evento Sismico', 'AutoDetectado'),
+('Evento Sismico', 'BloqueadoEnRevision'),
 ('Evento Sismico', 'Confirmado'),
-('Evento Sismico', 'Descartado');
+('Evento Sismico', 'Rechazado');
 
 -- EstacionSismologica
 INSERT INTO EstacionSismologica (
@@ -71,7 +71,11 @@ INSERT INTO SerieTemporal (
     eventoSismico_id, sismografo_id
 ) VALUES
 (FALSE, '2025-11-06 20:10:00', '2025-11-06 20:11:00', 5, 1, 1),
-(FALSE, '2025-05-20 20:15:00', '2025-05-20 20:16:00', 5, 2, 2);
+(FALSE, '2025-05-20 20:15:00', '2025-05-20 20:16:00', 5, 2, 2),
+(FALSE,  '2025-06-10 13:30:00', '2025-06-10 13:31:00', 10, 3, 1),
+(FALSE, '2025-07-02 08:05:00', '2025-07-02 08:06:00', 8, 5, 2),
+(FALSE,  '2025-08-15 22:00:00', '2025-08-15 22:02:00', 6, 4, 2),
+(FALSE, '2025-09-30 11:20:00', '2025-09-30 11:21:00', 12, 2, 1);
 
 -- TipoDeDato
 INSERT INTO TipoDeDato (denominacion, nombreUnidadMedida, valorUmbral) VALUES
