@@ -2,11 +2,9 @@ from datetime import datetime
 
 from ClasesEntidad.ClasificacionSismo import ClasificacionSismo
 from ClasesEntidad.AlcanceSismo import AlcanceSismo
-from ClasesEntidad.CambioEstado import CambioEstado
 from ClasesEntidad.DetalleMuestraSismica import DetalleMuestraSismica
 from ClasesEntidad.Empleado import Empleado
 from ClasesEntidad.EstacionSismologica import EstacionSismologica
-from ClasesEntidad.Estado import Estado
 from ClasesEntidad.State.AutoDetectado import AutoDetectado
 from ClasesEntidad.EventoSismico import EventoSismico
 from ClasesEntidad.MuestraSismica import MuestraSismica
@@ -16,6 +14,17 @@ from ClasesEntidad.Sesion import Sesion
 from ClasesEntidad.Sismografo import Sismografo
 from ClasesEntidad.TipoDeDato import TipoDeDato
 from ClasesEntidad.Usuario import Usuario
+
+from Data.dao.baseDao import BaseDAO
+from Data.models.ClasificacionSismo import ClasificacionSismoModel
+
+dao = BaseDAO(ClasificacionSismoModel)
+clasificaciones = dao.get_all()
+
+for c in clasificaciones:
+    print(c.id, c.kmProfundidadDesde, c.kmProfundidadHasta)
+    
+dao.close()
 
 clasificaciones = [
     ClasificacionSismo("Superficial", 0, 60),

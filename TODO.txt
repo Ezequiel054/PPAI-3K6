@@ -1,1 +1,8 @@
-Falta nomas usar datos de bbdd (ya cargados) y guardar los nuevos que se crean en ejecucion
+-- HECHO: Falta nomas usar datos de bbdd (ya cargados) y guardar los nuevos que se crean en ejecucion
+
+Falta usar los mappers para persistencia:
+1- Lo que se trae de la bd se convierta a objeto
+2- Los objetos creados en la ejecucion del programa se pasen a la bd
+
+(1 para que gestor pueda usar bd ya que trabaja con objetos y no registros de la bd,
+2 para guardar lo que se hace en la bd)

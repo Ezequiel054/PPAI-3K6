@@ -1,9 +1,9 @@
 from sqlalchemy import (Column, Integer, String, Date, DECIMAL)
-from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy.orm import relationship
+from Data.database import Base
 
-Base = declarative_base()
 
-class EstacionSismologica(Base):
+class EstacionSismologicaModel(Base):
     __tablename__ = "EstacionSismologica"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -15,7 +15,7 @@ class EstacionSismologica(Base):
     documentoCertificacionAdq = Column(String(255))
     fechaSolcitudCertificacion = Column(Date)
 
-    sismografos = relationship("Sismografo", back_populates="estacionSismologica")
+    sismografos = relationship("SismografoModel", back_populates="estacionSismologica")
 
     def __repr__(self):
         return f"<EstacionSismologica(codigo='{self.codigoEstacion}')>"

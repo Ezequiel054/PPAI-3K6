@@ -1,9 +1,9 @@
 from sqlalchemy import (Column, Integer, String, DECIMAL)
-from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy.orm import relationship
+from Data.database import Base
 
-Base = declarative_base()
 
-class TipoDeDato(Base):
+class TipoDeDatoModel(Base):
     __tablename__ = "TipoDeDato"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -11,7 +11,7 @@ class TipoDeDato(Base):
     nombreUnidadMedida = Column(String(50))
     valorUmbral = Column(DECIMAL(10, 2))
 
-    detalles = relationship("DetalleMuestraSismica", back_populates="tipoDeDato")
+    detalles = relationship("DetalleMuestraSismicaModel", back_populates="tipoDeDato")
 
     def __repr__(self):
         return f"<TipoDeDato(denominacion='{self.denominacion}')>"

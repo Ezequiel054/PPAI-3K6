@@ -1,9 +1,9 @@
 from sqlalchemy import (Column, Integer, String, ForeignKey)
-from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy.orm import relationship
+from Data.database import Base
 
-Base = declarative_base()
 
-class Usuario(Base):
+class UsuarioModel(Base):
     __tablename__ = "Usuario"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -11,8 +11,8 @@ class Usuario(Base):
     password = Column(String(255), nullable=False)
     empleado_id = Column(Integer, ForeignKey("Empleado.id"))
 
-    empleado = relationship("Empleado", back_populates="usuario")
-    sesiones = relationship("Sesion", back_populates="usuario", cascade="all, delete-orphan")
+    empleado = relationship("EmpleadoModel", back_populates="usuario")
+    sesiones = relationship("SesionModel", back_populates="usuario", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Usuario(nombreUsuario='{self.nombreUsuario}')>"

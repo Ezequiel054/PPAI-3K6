@@ -1,9 +1,9 @@
 from sqlalchemy import (Column, Integer, Boolean, ForeignKey, DateTime, DECIMAL)
-from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy.orm import relationship
+from Data.database import Base
 
-Base = declarative_base()
 
-class SerieTemporal(Base):
+class SerieTemporalModel(Base):
     __tablename__ = "SerieTemporal"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -14,9 +14,9 @@ class SerieTemporal(Base):
 
     eventoSismico_id = Column(Integer, ForeignKey("EventoSismico.id"))
 
-    eventoSismico = relationship("EventoSismico", back_populates="series")
-    muestras = relationship("MuestraSismica", back_populates="serieTemporal", cascade="all, delete-orphan")
-    sismografo = relationship("Sismografo", back_populates="serieTemporal", uselist=False)
+    eventoSismico = relationship("EventoSismicoModel", back_populates="series")
+    muestras = relationship("MuestraSismicaModel", back_populates="serieTemporal", cascade="all, delete-orphan")
+    sismografo = relationship("SismografoModel", back_populates="serieTemporal", uselist=False)
 
     def __repr__(self):
         return f"<SerieTemporal(id={self.id}, frecuencia={self.frecuenciaMuestreo})>"

@@ -1,9 +1,9 @@
 from sqlalchemy import (Column, Integer, DateTime, ForeignKey)
-from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy.orm import relationship
+from Data.database import Base
 
-Base = declarative_base()
 
-class CambioEstado(Base):
+class CambioEstadoModel(Base):
     __tablename__ = "CambioEstado"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -13,9 +13,9 @@ class CambioEstado(Base):
     responsableInspeccion_id = Column(Integer, ForeignKey("Empleado.id"))
     eventoSismico_id = Column(Integer, ForeignKey("EventoSismico.id"))
 
-    estado = relationship("Estado", back_populates="cambios")
-    responsableInspeccion = relationship("Empleado", back_populates="inspecciones")
-    eventoSismico = relationship("EventoSismico", back_populates="cambiosEstado")
+    estado = relationship("EstadoModel", back_populates="cambios")
+    responsableInspeccion = relationship("EmpleadoModel", back_populates="inspecciones")
+    eventoSismico = relationship("EventoSismicoModel", back_populates="cambiosEstado")
 
     def __repr__(self):
         return f"<CambioEstado(id={self.id}, estado_id={self.estado_id})>"
