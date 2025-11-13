@@ -4,7 +4,7 @@ from ClasesEntidad.ClasificacionSismo import ClasificacionSismo
 
 def model_to_clasificacion(model):
     return ClasificacionSismo(
-        nom=getattr(model, "nombre", None),
+        nombre=model.nombre,
         kmDesde=model.kmProfundidadDesde,
         kmHasta=model.kmProfundidadHasta
     )

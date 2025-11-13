@@ -8,34 +8,48 @@ from ClasesEntidad.State.Rechazado import Rechazado
 def model_to_estado(model):
     """
     Convierte EstadoModel -> una subclase concreta de Estado según el nombre guardado en la BD.
-    Ejemplo: si nombreEstado = "Activo", devolverá EstadoActivo(ambito)
+    Ejemplo: si nombreEstado = "AutoDetectado", devolverá EstadoAutoDetectado(ambito)
     """
     if model is None:
         return None
 
     ambito = getattr(model, "ambito", None)
     nombre_estado = getattr(model, "nombreEstado", None)
-
-    # Buscamos todas las subclases de Estado
-    subclases = {cls.__name__: cls for cls in Estado.__subclasses__()}
-
-    # Buscamos si existe una subclase con el mismo nombre
-    clase_estado = subclases.get(nombre_estado)
-
-    if clase_estado:
-        # Si la encontramos, la instanciamos normalmente
-        return clase_estado(ambito)
+    print("Estado")
+    print("Estado")
+    print("Estado")
+    print("Estado")
+    print("Estado")
+    print("ESTADO", nombre_estado)
+    if (nombre_estado == "AutoDetectado"):
+        return AutoDetectado(ambito)
+    elif (nombre_estado == "BloqueadoEnRevision"):
+        return BloqueadoEnRevision(ambito)
+    elif (nombre_estado == "Rechazado"):
+        return Rechazado(ambito)
     else:
-        # Si no existe esa subclase, usamos una genérica
-        class EstadoDesconocido(Estado):
-            def __init__(self, ambito, nombre):
-                super().__init__(ambito)
-                self.nombreEstado = nombre
+        return None
 
-            def __repr__(self):
-                return f"<EstadoDesconocido(nombreEstado={self.nombreEstado})>"
+    # # Buscamos todas las subclases de Estado
+    # subclases = {cls.__name__: cls for cls in Estado.__subclasses__()}
 
-        return EstadoDesconocido(ambito, nombre_estado)
+    # # Buscamos si existe una subclase con el mismo nombre
+    # clase_estado = subclases.get(nombre_estado)
+
+    # if clase_estado:
+    #     # Si la encontramos, la instanciamos normalmente
+    #     return clase_estado(ambito)
+    # else:
+    #     # Si no existe esa subclase, usamos una genérica
+    #     class EstadoDesconocido(Estado):
+    #         def __init__(self, ambito, nombre):
+    #             super().__init__(ambito)
+    #             self.nombreEstado = nombre
+
+    #         def __repr__(self):
+    #             return f"<EstadoDesconocido(nombreEstado={self.nombreEstado})>"
+
+    #     return EstadoDesconocido(ambito, nombre_estado)
 
 
 def estado_to_model(obj):

@@ -15,117 +15,94 @@ from ClasesEntidad.Sismografo import Sismografo
 from ClasesEntidad.TipoDeDato import TipoDeDato
 from ClasesEntidad.Usuario import Usuario
 
+# from Data.dao.baseDao import BaseDAO
+# from Data.models.ClasificacionSismo import ClasificacionSismoModel
+# from Data.mappers.ClasificacionSismoMapper import model_to_clasificacion
+
+# dao = BaseDAO(ClasificacionSismoModel)
+# clasificacionesDAO = dao.get_all()
+# clasificaciones = []
+
+# for c in clasificacionesDAO:
+#     clas = model_to_clasificacion(c)
+#     clasificaciones.append(clas)
+#     print(clas)
+
+# dao.close()
+
+from datetime import datetime
+
+# --- DAO base y modelos ---
 from Data.dao.baseDao import BaseDAO
 from Data.models.ClasificacionSismo import ClasificacionSismoModel
+from Data.models.OrigenDeGeneracion import OrigenDeGeneracionModel
+from Data.models.AlcanceSismo import AlcanceSismoModel
+from Data.models.Estado import EstadoModel
+from Data.models.TipoDeDato import TipoDeDatoModel
+from Data.models.DetalleMuestraSismica import DetalleMuestraSismicaModel
+from Data.models.MuestraSismica import MuestraSismicaModel
+from Data.models.SerieTemporal import SerieTemporalModel
+from Data.models.EventoSismico import EventoSismicoModel
+from Data.models.EstacionSismologica import EstacionSismologicaModel
+from Data.models.Sismografo import SismografoModel
+from Data.models.Empleado import EmpleadoModel
+from Data.models.Usuario import UsuarioModel
+from Data.models.Sesion import SesionModel
 
-dao = BaseDAO(ClasificacionSismoModel)
-clasificaciones = dao.get_all()
+# --- Mappers ---
+from Data.mappers.ClasificacionSismoMapper import model_to_clasificacion
+from Data.mappers.OrigenDeGeneracionMapper import model_to_origen
+from Data.mappers.AlcanceSismoMapper import model_to_alcance
+from Data.mappers.EstadoMapper import model_to_estado
+from Data.mappers.TipoDeDatoMapper import model_to_tipo
+from Data.mappers.DetalleMuestraSismicaMapper import model_to_detalle
+from Data.mappers.MuestraSismicaMapper import model_to_muestra
+from Data.mappers.SerieTemporalMapper import model_to_serie
+from Data.mappers.EventoSismicoMapper import model_to_evento
+from Data.mappers.EstacionSismologicaMapper import model_to_estacion
+from Data.mappers.SismografoMapper import model_to_sismografo
+from Data.mappers.EmpleadoMapper import model_to_empleado
+from Data.mappers.UsuarioMapper import model_to_usuario
+from Data.mappers.SesionMapper import model_to_sesion
 
+
+# --- Función genérica para cargar entidades desde BD ---
+def cargar_entidades(model_class, mapper_func):
+    dao = BaseDAO(model_class)
+    modelos = dao.get_all()
+    entidades = [mapper_func(m) for m in modelos]
+    dao.close()
+    return entidades
+
+
+# --- Cargar todas las entidades desde la base ---
+clasificaciones = cargar_entidades(ClasificacionSismoModel, model_to_clasificacion)
+origenes = cargar_entidades(OrigenDeGeneracionModel, model_to_origen)
+alcances = cargar_entidades(AlcanceSismoModel, model_to_alcance)
+estados = cargar_entidades(EstadoModel, model_to_estado)
+tiposDeDatos = cargar_entidades(TipoDeDatoModel, model_to_tipo)
+detallesMuestra = cargar_entidades(DetalleMuestraSismicaModel, model_to_detalle)
+muestras = cargar_entidades(MuestraSismicaModel, model_to_muestra)
+series = cargar_entidades(SerieTemporalModel, model_to_serie)
+eventosSismicos = cargar_entidades(EventoSismicoModel, model_to_evento)
+estaciones = cargar_entidades(EstacionSismologicaModel, model_to_estacion)
+sismografos = cargar_entidades(SismografoModel, model_to_sismografo)
+empleados = cargar_entidades(EmpleadoModel, model_to_empleado)
+usuarios = cargar_entidades(UsuarioModel, model_to_usuario)
+sesiones = cargar_entidades(SesionModel, model_to_sesion)
+
+
+# --- Ejemplo de uso ---
+print("\n📊 Clasificaciones cargadas:")
 for c in clasificaciones:
-    print(c.id, c.kmProfundidadDesde, c.kmProfundidadHasta)
-    
-dao.close()
+    print(" -", c)
 
-clasificaciones = [
-    ClasificacionSismo("Superficial", 0, 60),
-    ClasificacionSismo("Intermedio", 61, 300),
-    ClasificacionSismo("Profundo", 301, 650),
-    ]
+print("\n🌋 Orígenes cargados:")
+for o in origenes:
+    print(" -", o)
 
-origenes = [
-    OrigenDeGeneracion("Interplaca", "Sismo entre placas tectónicas"),
-    OrigenDeGeneracion("Volcánico", "Sismo por actividad volcánica"),
-    OrigenDeGeneracion("Explosiones", "Sismo por explosiones humanas"),
-]
+print("\n📈 Eventos sismicos:")
+for e in eventosSismicos:
+    print(" -", e)
 
-alcances = [
-    AlcanceSismo("Local", "Hasta 100 km del epicentro"),
-    AlcanceSismo("Regional", "Entre 100 y 1000 km del epicentro"),
-    AlcanceSismo("Tele-sismo", "Más de 1000 km del epicentro"),
-]
-
-estados = [
-    AutoDetectado("Evento Sismico"),
-    AutoDetectado("Evento Sismico"),
-    AutoDetectado("Evento Sismico"),
-    AutoDetectado("Evento Sismico"),
-    AutoDetectado("Evento Sismico"),
-    AutoDetectado("Evento Sismico")
-]
-
-tiposDeDatos = [
-    TipoDeDato("Velocidad de Onda", "km/seg", 100),
-    TipoDeDato("Frecuencia de Onda", "Hz", 100),
-    TipoDeDato("Longitud", "Km/ciclo", 100)
-]
-
-detallesMuestra = [
-    [DetalleMuestraSismica(50, tiposDeDatos[0]),
-    DetalleMuestraSismica(50, tiposDeDatos[1]),
-    DetalleMuestraSismica(50, tiposDeDatos[2])],
-
-    [DetalleMuestraSismica(55, tiposDeDatos[0]),
-    DetalleMuestraSismica(55, tiposDeDatos[1]),
-    DetalleMuestraSismica(55, tiposDeDatos[2])]
-]
-
-muestras = [
-    [MuestraSismica("2025-11-06 20:15", detallesMuestra[0]),
-    MuestraSismica("2025-11-06 20:20", detallesMuestra[1])],
-
-    [MuestraSismica("2024-10-20 16:40", detallesMuestra[0]),
-    MuestraSismica("2024-10-20 16:45", detallesMuestra[1])]
-]
-
-series = [
-    SerieTemporal(False, "2025-11-06 20:10", "2025-11-06 20:11",
-                  "5", muestras[0]),
-    SerieTemporal(False, "2025-05-20 20:15", "2025-05-20 20:15",
-                  "5", muestras[1])
-]
-
-eventosSismicos = [
-    EventoSismico("2025-11-06 20:15", "2025-11-06 20:20", 100,
-                  100,100, 100, 6,
-                  clasificaciones[0], origenes[0], alcances[0], [series[0]], estados[1], []),
-    EventoSismico("2024-11-05 16:40", "2024-11-05 16:50", 65,
-                  65,65, 65, 4,
-                  clasificaciones[1], origenes[1], alcances[0], [series[1]], estados[1], []),
-    EventoSismico("2025-01-10 06:00", "2025-01-10 06:05", 87.5,
-                  10.123, 10.456, -74.321, 6,
-                  clasificaciones[1], origenes[2], alcances[1], [series[0]], estados[1], []),
-    EventoSismico("2025-04-15 14:30", "2025-04-15 14:35", 92.3,
-                  -33.789, -34.001, -70.789, 8,
-                  clasificaciones[0], origenes[2], alcances[2], [series[0]], estados[1], []),
-    EventoSismico("2025-07-20 22:45", "2025-07-20 22:50", 78.9,
-                  35.123, 35.876, 139.654, 4,
-                  clasificaciones[1], origenes[2], alcances[1], [series[0]], estados[1], [])
-
-]
-
-estaciones = [
-    EstacionSismologica("001", "Estacion Pedro ", 100, 100,
-                        "10", "Doc",
-                        "2024-12-21"),
-    EstacionSismologica("001", "Estacion Ezequiel", 100, 100,
-                        "10", "Doc",
-                        "2024-12-21")
-]
-
-sismografos = [
-    Sismografo("2024-12-22", "001", "7156",
-               estaciones[0], series[1]),
-    Sismografo("2024-12-22", "002", "7157",
-               estaciones[1], series[0])
-]
-
-empleados = [
-    Empleado("Lucía", "González")
-]
-
-usuarios = [
-    Usuario("LuciaGonz", "21Lucia", empleados[0])
-]
-
-sesion = Sesion(datetime.now(), "", usuarios[0])
-
+print("\n✅ Carga completa de entidades desde la base de datos.")

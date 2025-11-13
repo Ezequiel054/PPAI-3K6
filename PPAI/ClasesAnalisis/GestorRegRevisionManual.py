@@ -2,7 +2,7 @@ from datetime import datetime
 from Data.data import estados as dataEstados
 from Data.data import eventosSismicos as dataEventos
 from Data.data import sismografos as dataSismografos
-from Data.data import sesion as dataSesion
+from Data.data import sesiones as dataSesion
 import os
 
 
@@ -15,7 +15,7 @@ class GestorRegRevisionManual:
         self.eventoSeleccionado = None
 
         self.sismografos = dataSismografos # De data
-        self.sesion = dataSesion # De data
+        self.sesion = dataSesion[0] # De data
         self.empleadoEnSesion = None
 
 

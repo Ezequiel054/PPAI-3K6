@@ -90,10 +90,10 @@ class EventoSismico:
     #     self.cambiosEstado.append(self.crearCambioEstado(fecha, estadoRechazado, empleado))
 
 
-    def confirmar(self, estadoConfirmado, fecha, empleado):
-        self.buscarEstadoActual(fecha)
-        self.setEstadoActual(estadoConfirmado)
-        self.cambiosEstado.append(self.crearCambioEstado(fecha, estadoConfirmado, empleado))
+    # def confirmar(self, estadoConfirmado, fecha, empleado):
+    #     self.buscarEstadoActual(fecha)
+    #     self.setEstadoActual(estadoConfirmado)
+    #     self.cambiosEstado.append(self.crearCambioEstado(fecha, estadoConfirmado, empleado))
 
 
 

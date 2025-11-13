@@ -13,6 +13,7 @@ class SerieTemporalModel(Base):
     frecuenciaMuestreo = Column(DECIMAL(10, 2))
 
     eventoSismico_id = Column(Integer, ForeignKey("EventoSismico.id"))
+    sismografo_id = Column(Integer, ForeignKey("Sismografo.id"))
 
     eventoSismico = relationship("EventoSismicoModel", back_populates="series")
     muestras = relationship("MuestraSismicaModel", back_populates="serieTemporal", cascade="all, delete-orphan")

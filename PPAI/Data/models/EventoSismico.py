@@ -15,7 +15,7 @@ class EventoSismicoModel(Base):
     longitudHipocentro = Column(DECIMAL(10, 6))
     valorMagnitud = Column(DECIMAL(4, 2))
 
-    clasificacionSismo_id = Column(Integer, ForeignKey("ClasificacionSismo.id"))
+    clasificacion_id = Column(Integer, ForeignKey("ClasificacionSismo.id"))
     origenGeneracion_id = Column(Integer, ForeignKey("OrigenDeGeneracion.id"))
     alcanceSismo_id = Column(Integer, ForeignKey("AlcanceSismo.id"))
     estadoActual_id = Column(Integer, ForeignKey("Estado.id"))

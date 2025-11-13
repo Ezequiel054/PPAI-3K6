@@ -11,7 +11,6 @@ class SismografoModel(Base):
     identificadorSismografo = Column(String(50), nullable=False)
     nroSerie = Column(String(50))
     estacionSismologica_id = Column(Integer, ForeignKey("EstacionSismologica.id"))
-    serieTemporal_id = Column(Integer, ForeignKey("SerieTemporal.id"))
 
     estacionSismologica = relationship("EstacionSismologicaModel", back_populates="sismografos")
     serieTemporal = relationship("SerieTemporalModel", back_populates="sismografo")
