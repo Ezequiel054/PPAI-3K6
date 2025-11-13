@@ -107,3 +107,12 @@ INSERT INTO DetalleMuestraSismica (valor, tipoDeDato_id, muestraSismica_id) VALU
 (52.0, 1, 4),
 (21.0, 2, 4),
 (185.0, 3, 4);
+
+INSERT INTO CambioDeEstado
+(id, fechaHoraInicio, fechaHoraFin, estado_id, responsableInspeccion_id, eventoSismico_id)
+VALUES
+(1, '2025-11-13 08:00:00', '2025-11-13 10:00:00', 1, 2, 1),
+(2, '2025-11-13 09:30:00', '2025-11-13 11:30:00', 1, 2, 2),
+(3, '2025-11-13 11:00:00', '2025-11-13 13:00:00', 1, 2, 3),
+(4, '2025-11-13 12:30:00', '2025-11-13 14:30:00', 1, 2, 4),
+(5, '2025-11-13 14:00:00', '2025-11-13 16:00:00', 1, 2, 5);
