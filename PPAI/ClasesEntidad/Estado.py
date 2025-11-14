@@ -7,13 +7,13 @@ class Estado(ABC):
         self.id = id
 
     def esAutodetectado(self):
-        print("Este estado no puede recibir esa operacion")
+        return False
 
     def esBloqueadoEnRevision(self):
-        print("Este estado no puede recibir esa operacion")
+        return False
     
     def esRechazado(self):
-        print("Este estado no puede recibir esa operacion")
+        return False
     
     def esAmbitoEventoSismico(self):
         print("Este estado no puede recibir esa operacion")
