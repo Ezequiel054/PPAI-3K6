@@ -1,10 +1,9 @@
 from ClasesEntidad.Estado import Estado
-from ClasesEntidad.CambioEstado import CambioEstado
 from ClasesEntidad.State.Rechazado import Rechazado
 
 class BloqueadoEnRevision(Estado):
-    def __init__(self, ambito):
-        super().__init__(ambito)
+    def __init__(self, ambito, id=2):
+        super().__init__(ambito, id)
         self.nombreEstado = "BloqueadoEnRevision"
 
 
@@ -29,12 +28,14 @@ class BloqueadoEnRevision(Estado):
     def buscarCambioEstadoActual(self, fechaFin,cambioEstados):
         for cambioEst in cambioEstados:
             if cambioEst.esEstadoActual():
-                cambioEst.setFechaHoraFin = fechaFin
+                cambioEst.setFechaFin(fechaFin)
 
 
     def crearCambioEstado(self, fecha, estado, empleado):
+        from ClasesEntidad.CambioEstado import CambioEstado
         cambioEstado = CambioEstado(fechaHoraInicio= fecha, fechaHoraFin=None,
                                     estado=estado, responsableInspeccion=empleado)
+        cambioEstado.saveInDB()
         return cambioEstado
 
 

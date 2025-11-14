@@ -1,7 +1,6 @@
 # mapper_estado.py
 from ClasesEntidad.Estado import Estado
 from Data.models.Estado import EstadoModel
-from ClasesEntidad.State.AutoDetectado import AutoDetectado
 from ClasesEntidad.State.BloqueadoEnRevision import BloqueadoEnRevision
 from ClasesEntidad.State.Rechazado import Rechazado
 
@@ -13,20 +12,16 @@ def model_to_estado(model):
     if model is None:
         return None
 
+    id = getattr(model, "id", None)
     ambito = getattr(model, "ambito", None)
     nombre_estado = getattr(model, "nombreEstado", None)
-    print("Estado")
-    print("Estado")
-    print("Estado")
-    print("Estado")
-    print("Estado")
-    print("ESTADO", nombre_estado)
     if (nombre_estado == "AutoDetectado"):
-        return AutoDetectado(ambito)
+        from ClasesEntidad.State.AutoDetectado import AutoDetectado
+        return AutoDetectado(ambito, id)
     elif (nombre_estado == "BloqueadoEnRevision"):
-        return BloqueadoEnRevision(ambito)
+        return BloqueadoEnRevision(ambito, id)
     elif (nombre_estado == "Rechazado"):
-        return Rechazado(ambito)
+        return Rechazado(ambito, id)
     else:
         return None
 

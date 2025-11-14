@@ -43,7 +43,7 @@ class EventoSismico:
 
 
     def bloquearEnRevision(self, fecha, empleado):
-        self.estadoActual.bloquearEnRevision(fecha, empleado, self.cambiosEstado, self)   
+        self.estadoActual.bloquearEnRevision(fecha, empleado, self.cambiosEstado, self)
         # self.buscarEstadoActual(fecha)
         # self.setEstadoActual(estadoBloqueado)
         # self.cambioEstado.append(self.crearCambioEstado(fecha, estadoBloqueado, empleado))
