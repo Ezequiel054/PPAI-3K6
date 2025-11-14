@@ -1,5 +1,6 @@
 from ClasesEntidad.Estado import Estado
 from ClasesEntidad.State.Rechazado import Rechazado
+from ClasesEntidad.CambioEstado import CambioEstado
 
 class BloqueadoEnRevision(Estado):
     def __init__(self, ambito, id=2):
@@ -18,7 +19,7 @@ class BloqueadoEnRevision(Estado):
       
         estadoRechazado = self.crearProximoEstado()
         
-        cambioEstado = self.crearCambioEstado(fechaActual, estadoRechazado, empleado)
+        cambioEstado = self.crearCambioEstado(fechaActual, estadoRechazado, empleado, eventoSismico.id)
 
         eventoSismico.agregarCambioEstado(cambioEstado)
         eventoSismico.setEstadoActual(estadoRechazado)
@@ -31,11 +32,10 @@ class BloqueadoEnRevision(Estado):
                 cambioEst.setFechaFin(fechaFin)
 
 
-    def crearCambioEstado(self, fecha, estado, empleado):
-        from ClasesEntidad.CambioEstado import CambioEstado
+    def crearCambioEstado(self, fecha, estado, empleado, eventoSismico_id):
         cambioEstado = CambioEstado(fechaHoraInicio= fecha, fechaHoraFin=None,
                                     estado=estado, responsableInspeccion=empleado)
-        cambioEstado.saveInDB()
+        cambioEstado.saveInDB(eventoSismico_id)
         return cambioEstado
 
 

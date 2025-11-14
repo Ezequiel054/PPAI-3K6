@@ -27,7 +27,8 @@ def model_to_evento(model):
         model_to_alcance(model.alcanceSismo) if getattr(model, "alcanceSismo", None) else None,
         [model_to_serie(s) for s in getattr(model, "series", [])],
         model_to_estado(model.estadoActual) if getattr(model, "estadoActual", None) else None,
-        [model_to_cambio(c) for c in getattr(model, "cambiosEstado", [])]
+        [model_to_cambio(c) for c in getattr(model, "cambiosEstado", [])],
+        model.id
     )
 
     print("Evento mapeado:", Evento)

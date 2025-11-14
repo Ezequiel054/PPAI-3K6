@@ -1,9 +1,11 @@
 from ClasesEntidad.CambioEstado import CambioEstado
+from Data.dao.baseDao import BaseDAO
+from Data.models.EventoSismico import EventoSismicoModel
 
 class EventoSismico:
     def __init__(self, fechHorOcurr, fechHorFin, latEpicentro, latHipocentro,
                  longHipocentro, longEpicentro, valorMagnitud,
-                 clasif, origen, alcance, serieTemp, estAct, cambiosEst):
+                 clasif, origen, alcance, serieTemp, estAct, cambiosEst, id=None):
         # Valores
         self.fechaHoraOcurrencia = fechHorOcurr
         self.fechaHoraFin = fechHorFin
@@ -12,6 +14,7 @@ class EventoSismico:
         self.longitudEpicentro = longEpicentro
         self.longitudHipocentro = longHipocentro
         self.valorMagnitud = valorMagnitud
+        self.id = id
 
         # Objetos
         self.clasificacion = clasif
@@ -53,6 +56,8 @@ class EventoSismico:
 
     def agregarCambioEstado(self,nuevoCambioEstado):
         self.cambiosEstado.append(nuevoCambioEstado)
+        for c in self.cambiosEstado:
+            print(c)
 
 
 
@@ -64,6 +69,8 @@ class EventoSismico:
 
     def setEstadoActual(self, estado):
         self.estadoActual = estado
+        dao = BaseDAO(EventoSismicoModel)
+        dao.update_field(self.id, 'estadoActual_id', estado.id)
 
 
     # def crearCambioEstado(self, fecha, estado, empleado):

@@ -1,7 +1,6 @@
 # mapper_estado.py
 from ClasesEntidad.Estado import Estado
 from Data.models.Estado import EstadoModel
-from ClasesEntidad.State.BloqueadoEnRevision import BloqueadoEnRevision
 from ClasesEntidad.State.Rechazado import Rechazado
 
 def model_to_estado(model):
@@ -19,6 +18,7 @@ def model_to_estado(model):
         from ClasesEntidad.State.AutoDetectado import AutoDetectado
         return AutoDetectado(ambito, id)
     elif (nombre_estado == "BloqueadoEnRevision"):
+        from ClasesEntidad.State.BloqueadoEnRevision import BloqueadoEnRevision
         return BloqueadoEnRevision(ambito, id)
     elif (nombre_estado == "Rechazado"):
         return Rechazado(ambito, id)
@@ -58,7 +58,8 @@ def estado_to_model(obj):
     if isinstance(obj, EstadoModel):
         return obj
 
+    id_estado = getattr(obj, "id", None)
     ambito = getattr(obj, "ambito", None)
     nombre_estado = getattr(obj, "nombreEstado", obj.__class__.__name__)
 
-    return EstadoModel(ambito=ambito, nombreEstado=nombre_estado)
+    return EstadoModel(ambito=ambito, nombreEstado=nombre_estado, id=id_estado)

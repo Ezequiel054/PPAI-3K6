@@ -10,6 +10,8 @@ class CambioEstado:
         self.responsableInspeccion = responsableInspeccion
         self.id = id
 
+    def __str__(self):
+        return f"\nCambioEstado({self.fechaHoraInicio}, {self.fechaHoraFin}, {self.estado.nombreEstado}, {self.responsableInspeccion.nombre})\n"
 
     def esEstadoActual(self):
         return self.fechaHoraFin is None
@@ -26,7 +28,27 @@ class CambioEstado:
         print("Fecha")
         dao.update_field(self.id, 'fechaHoraFin', fechaFin)
 
-    def saveInDB(self):
+    def saveInDB(self, eventoSismico_id):
         dao = BaseDAO(CambioEstadoModel)
-        dao.create(cambio_to_model(self))
+        modelo = cambio_to_model(self)
+        modelo.eventoSismico_id = eventoSismico_id
+        created_model = dao.create(modelo)
+        # Pisa el id None con el id asignado por la BD
+        try:
+            self.id = created_model.id
+        except Exception:
+            # fallback por si el modelo tiene otra forma de exponer el id
+            self.id = getattr(created_model, "id", self.id)
+
+    # def saveInDB(self):
+    #     dao = BaseDAO(CambioEstadoModel)
+    #     # Al crear el registro en la BD, el DAO devuelve el modelo SQLAlchemy con el id asignado.
+    #     created_model = dao.create(cambio_to_model(self))
+    #     # Asegurarse de propagar el id asignado al objeto dominio para futuras actualizaciones.
+    #     try:
+    #         self.id = created_model.id
+    #     except Exception:
+    #         # fallback por si el modelo tiene otra forma de exponer el id
+    #         self.id = getattr(created_model, "id", self.id)
+    #     return created_model
 

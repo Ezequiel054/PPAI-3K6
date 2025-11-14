@@ -96,14 +96,6 @@ class GestorRegRevisionManual:
         print("Bloquear Evento")
 
 
-    def buscarEstadoBloqueado(self):
-        print("Obtener Estado Bloqueado")
-        for est in self.estados:
-            if est.esAmbitoEventoSismico and est.esBloqueadoEnRevision():
-                return est
-        return None
-
-
     def getFechaHoraActual(self):
         print("Obtener fecha")
         return datetime.now()
@@ -132,10 +124,7 @@ class GestorRegRevisionManual:
         
         # Convertir diccionario a array
         arraySeriesPorEstacion = [[estacion, series] for estacion, series in seriesPorEstacion.items()]
-            # serie = sis.getSerieTemporal()
-            # for ser in self.series:
-            #     if sis.sosDeSerieTemporal(ser):
-            #         seriePorEstacion.append([estacionSismologica, serie])
+
         return arraySeriesPorEstacion
 
 
@@ -176,13 +165,6 @@ class GestorRegRevisionManual:
         fechaHora = self.getFechaHoraActual()
         self.eventoSeleccionado.rechazarEvento(fechaHora, self.empleadoEnSesion)
         print("Rechazar Evento")
-
-    def buscarEstadoRechazado(self, estados):
-        print("Buscar Estado Rechazado")
-        for est in estados:
-            if est.esRechazado() and est.esAmbitoEventoSismico():
-                return est
-        return None
 
 
     def finCU(self):
