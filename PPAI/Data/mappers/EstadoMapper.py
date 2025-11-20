@@ -16,12 +16,15 @@ def model_to_estado(model):
     nombre_estado = getattr(model, "nombreEstado", None)
     if (nombre_estado == "AutoDetectado"):
         from ClasesEntidad.State.AutoDetectado import AutoDetectado
-        return AutoDetectado(ambito, id)
+        inst = AutoDetectado(ambito, id)
+        return inst
     elif (nombre_estado == "BloqueadoEnRevision"):
         from ClasesEntidad.State.BloqueadoEnRevision import BloqueadoEnRevision
-        return BloqueadoEnRevision(ambito, id)
+        inst = BloqueadoEnRevision(ambito, id)
+        return inst
     elif (nombre_estado == "Rechazado"):
-        return Rechazado(ambito, id)
+        inst = Rechazado(ambito, id)
+        return inst
     else:
         return None
 
@@ -58,8 +61,7 @@ def estado_to_model(obj):
     if isinstance(obj, EstadoModel):
         return obj
 
-    id_estado = getattr(obj, "id", None)
     ambito = getattr(obj, "ambito", None)
     nombre_estado = getattr(obj, "nombreEstado", obj.__class__.__name__)
 
-    return EstadoModel(ambito=ambito, nombreEstado=nombre_estado, id=id_estado)
+    return EstadoModel(ambito=ambito, nombreEstado=nombre_estado)

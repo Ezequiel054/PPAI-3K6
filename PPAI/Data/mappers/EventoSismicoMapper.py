@@ -27,9 +27,11 @@ def model_to_evento(model):
         model_to_alcance(model.alcanceSismo) if getattr(model, "alcanceSismo", None) else None,
         [model_to_serie(s) for s in getattr(model, "series", [])],
         model_to_estado(model.estadoActual) if getattr(model, "estadoActual", None) else None,
-        [model_to_cambio(c) for c in getattr(model, "cambiosEstado", [])],
-        model.id
+        [model_to_cambio(c) for c in getattr(model, "cambiosEstado", [])]
     )
+
+    # No llamar a un setter de BD en la entidad. Si es necesario, el mapper/repo puede dejar atributo privado:
+    # Evento._db_id = getattr(model, "id", None)
 
     print("Evento mapeado:", Evento)
     return Evento

@@ -4,7 +4,7 @@ class Estado(ABC):
     def __init__(self, ambito, id=None):
         self.ambito = ambito
         self.nombreEstado = ""
-        self.id = id
+        # no almacenar ni exponer nada relacionado a BD en la entidad
 
     def esAutodetectado(self):
         return False

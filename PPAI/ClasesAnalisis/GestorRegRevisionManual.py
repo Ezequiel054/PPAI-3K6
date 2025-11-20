@@ -5,6 +5,10 @@ from Data.data import sismografos as dataSismografos
 from Data.data import sesiones as dataSesion
 import os
 
+# --- usar repositorios en lugar de hacer DB desde el gestor ---
+from Data.repositories.CambioEstadoRepository import CambioEstadoRepository
+from Data.repositories.EventoRepository import EventoRepository
+
 
 class GestorRegRevisionManual:
     def __init__(self, pantalla):
@@ -93,6 +97,8 @@ class GestorRegRevisionManual:
         # estadoBloqueadoEnRevision = self.buscarEstadoBloqueado()
         fecha = self.getFechaHoraActual()
         evento.bloquearEnRevision(fecha, self.empleadoEnSesion)
+        # Persistir el nuevo cambio y actualizar el evento en BD
+        self._persistir_nuevo_cambio_y_actualizar_evento(evento, fecha)
         print("Bloquear Evento")
 
 
@@ -164,7 +170,31 @@ class GestorRegRevisionManual:
         #estadoRechazado = self.buscarEstadoRechazado(self.estados)
         fechaHora = self.getFechaHoraActual()
         self.eventoSeleccionado.rechazarEvento(fechaHora, self.empleadoEnSesion)
+        # Persistir el nuevo cambio (rechazo) y actualizar estado del evento en BD
+        self._persistir_nuevo_cambio_y_actualizar_evento(self.eventoSeleccionado, fechaHora)
         print("Rechazar Evento")
+
+
+    # --- helper: persistir el último cambio creado en memoria y actualizar estado del evento ---
+    def _persistir_nuevo_cambio_y_actualizar_evento(self, evento, fecha_creacion):
+        # 1) Persistir cambios cerrados (si los hay)
+        CambioEstadoRepository.persist_closed_changes(evento)
+
+        # 2) localizar el cambio recién creado en memoria (intenta por fechaHoraInicio)
+        nuevo_cambio = None
+        for c in reversed(evento.cambiosEstado):
+            if getattr(c, "fechaHoraInicio", None) == fecha_creacion:
+                nuevo_cambio = c
+                break
+        if not nuevo_cambio and evento.cambiosEstado:
+            nuevo_cambio = evento.cambiosEstado[-1]
+
+        # 3) Persistir nuevo cambio si existe
+        if nuevo_cambio:
+            CambioEstadoRepository.create_new_change(nuevo_cambio, evento)
+
+        # 4) Actualizar estadoActual del evento en BD (si corresponde)
+        EventoRepository.update_estado(evento, evento.estadoActual)
 
 
     def finCU(self):

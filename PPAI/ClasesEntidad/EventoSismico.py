@@ -1,11 +1,9 @@
 from ClasesEntidad.CambioEstado import CambioEstado
-from Data.dao.baseDao import BaseDAO
-from Data.models.EventoSismico import EventoSismicoModel
 
 class EventoSismico:
     def __init__(self, fechHorOcurr, fechHorFin, latEpicentro, latHipocentro,
                  longHipocentro, longEpicentro, valorMagnitud,
-                 clasif, origen, alcance, serieTemp, estAct, cambiosEst, id=None):
+                 clasif, origen, alcance, serieTemp, estAct, cambiosEst):
         # Valores
         self.fechaHoraOcurrencia = fechHorOcurr
         self.fechaHoraFin = fechHorFin
@@ -14,7 +12,6 @@ class EventoSismico:
         self.longitudEpicentro = longEpicentro
         self.longitudHipocentro = longHipocentro
         self.valorMagnitud = valorMagnitud
-        self.id = id
 
         # Objetos
         self.clasificacion = clasif
@@ -68,9 +65,8 @@ class EventoSismico:
 
 
     def setEstadoActual(self, estado):
+        # Actualiza solo en memoria; la capa de persistencia (DAO/repositorio) debe encargarse de persistir.
         self.estadoActual = estado
-        dao = BaseDAO(EventoSismicoModel)
-        dao.update_field(self.id, 'estadoActual_id', estado.id)
 
 
     # def crearCambioEstado(self, fecha, estado, empleado):
@@ -108,5 +104,5 @@ class EventoSismico:
 
 
     def rechazarEvento(self,fecha,empleado):
-        self.estadoActual.rechazar(fecha, empleado, self.cambiosEstado, self)   
+        self.estadoActual.rechazar(fecha, empleado, self.cambiosEstado, self)
 

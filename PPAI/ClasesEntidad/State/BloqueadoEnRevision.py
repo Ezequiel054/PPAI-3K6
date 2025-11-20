@@ -13,23 +13,16 @@ class BloqueadoEnRevision(Estado):
 
 
     def rechazar(self, fechaActual, empleado, cambiosEstado, eventoSismico):
-       
-
-        cambioEstadoActual = self.buscarCambioEstadoActual(fechaActual,cambiosEstado)
-
-        print()
-        print("Cambio Estado Actual a cerrar:")
-        cambioEstadoActual.setFechaFin(fechaActual) # Ahora aca se cierra el cambio de estado actual (fechaActual = fechaFin)
-        print(cambioEstadoActual)
-        print()
+        cambioEstadoActual = self.buscarCambioEstadoActual(fechaActual, cambiosEstado)
+        if cambioEstadoActual:
+            cambioEstadoActual.setFechaFin(fechaActual)  # cierra el cambio actual (solo memoria)
 
         estadoRechazado = self.crearProximoEstado()
-        
-        cambioEstado = self.crearCambioEstado(fechaActual, estadoRechazado, empleado, eventoSismico.id)
+        cambioEstado = self.crearCambioEstado(fechaActual, estadoRechazado, empleado, eventoSismico)
 
+        # agregar el cambio al evento en memoria; persistencia debe hacerse fuera del dominio
         eventoSismico.agregarCambioEstado(cambioEstado)
         eventoSismico.setEstadoActual(estadoRechazado)
-
 
 
     def buscarCambioEstadoActual(self, fechaFin,cambioEstados):
@@ -39,10 +32,10 @@ class BloqueadoEnRevision(Estado):
                 # cambioEst.setFechaFin(fechaFin)
 
 
-    def crearCambioEstado(self, fecha, estado, empleado, eventoSismico_id):
-        cambioEstado = CambioEstado(fechaHoraInicio= fecha, fechaHoraFin=None,
+    def crearCambioEstado(self, fecha, estado, empleado, eventoSismico):
+        # Crear objeto CambioEstado en memoria; no persistir aquí.
+        cambioEstado = CambioEstado(fechaHoraInicio=fecha, fechaHoraFin=None,
                                     estado=estado, responsableInspeccion=empleado)
-        cambioEstado.saveInDB(eventoSismico_id)
         return cambioEstado
 
 

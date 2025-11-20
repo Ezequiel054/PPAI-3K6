@@ -18,10 +18,10 @@ class AutoDetectado(Estado):
         
         estadoBloqueado = self.crearProximoEstado()
         
-        cambioEstado = self.crearCambioEstado(fecha, estadoBloqueado, empleado, eventoSismico.id)
+        cambioEstado = self.crearCambioEstado(fecha, estadoBloqueado, empleado, eventoSismico)
 
+        # agregar el cambio al evento en memoria; persistencia fuera del dominio
         eventoSismico.agregarCambioEstado(cambioEstado)
-
         eventoSismico.setEstadoActual(estadoBloqueado)
 
     def buscarEstadoActual(self, fechaFin,cambioEstados):
@@ -30,10 +30,9 @@ class AutoDetectado(Estado):
                 cambioEst.setFechaFin(fechaFin)
 
 
-    def crearCambioEstado(self, fecha, estado, empleado, eventoSismico_id):
+    def crearCambioEstado(self, fecha, estado, empleado, eventoSismico):
         cambioEstado = CambioEstado(fechaHoraInicio= fecha, fechaHoraFin=None,
                                     estado=estado, responsableInspeccion=empleado)
-        cambioEstado.saveInDB(eventoSismico_id)
         return cambioEstado
 
 
