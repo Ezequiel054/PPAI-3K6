@@ -13,19 +13,18 @@ class BloqueadoEnRevision(Estado):
 
 
     def rechazar(self, fechaActual, empleado, cambiosEstado, eventoSismico):
-        cambioEstadoActual = self.buscarCambioEstadoActual(fechaActual, cambiosEstado)
-        if cambioEstadoActual:
-            cambioEstadoActual.setFechaFin(fechaActual)  # cierra el cambio actual (solo memoria)
+        cambioEstadoActual = self.buscarCambioEstadoActual(cambiosEstado)
+        cambioEstadoActual.setFechaFin(fechaActual) # Ahora aca se cierra el cambio de estado actual (fechaActual = fechaFin)
 
         estadoRechazado = self.crearProximoEstado()
         cambioEstado = self.crearCambioEstado(fechaActual, estadoRechazado, empleado, eventoSismico)
 
-        # agregar el cambio al evento en memoria; persistencia debe hacerse fuera del dominio
+        
         eventoSismico.agregarCambioEstado(cambioEstado)
         eventoSismico.setEstadoActual(estadoRechazado)
 
 
-    def buscarCambioEstadoActual(self, fechaFin,cambioEstados):
+    def buscarCambioEstadoActual(self, cambioEstados):
         for cambioEst in cambioEstados:
             if cambioEst.esEstadoActual():
                 return cambioEst
