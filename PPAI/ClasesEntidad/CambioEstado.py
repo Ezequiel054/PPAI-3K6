@@ -6,9 +6,10 @@ class CambioEstado:
         self.fechaHoraFin = fechaHoraFin
         self.estado = estado
         self.responsableInspeccion = responsableInspeccion
+       
 
     def __str__(self):
-        return f"\nCambioEstado({self.fechaHoraInicio}, {self.fechaHoraFin}, {self.estado.nombreEstado}, {self.responsableInspeccion.nombre})\n"
+        return f"\nCambioEstado({self.fechaHoraInicio}, {self.fechaHoraFin}, {getattr(self.estado, 'nombreEstado', self.estado)}, {getattr(self.responsableInspeccion, 'nombre', self.responsableInspeccion)})\n"
 
     def esEstadoActual(self):
         return self.fechaHoraFin is None

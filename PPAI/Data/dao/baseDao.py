@@ -99,40 +99,21 @@ def persistir_cambios_cerrados(evento, session=None):
 	from Data.models.CambioEstado import CambioEstadoModel
 	dao_change = BaseDAO(CambioEstadoModel, session=session)
 
-	all_changes = dao_change.get_all() if dao_change._session_owner else dao_change.db.query(CambioEstadoModel).all()
+	# obtener todos los cambios existentes si es necesario
+	if dao_change._session_owner:
+		all_changes = dao_change.get_all()
+	else:
+		all_changes = dao_change.db.query(CambioEstadoModel).all()
 
 	for cambio in evento.cambiosEstado:
 		if getattr(cambio, "fechaHoraFin", None) is not None and not getattr(cambio, "_fin_persisted", False):
-			# actualizar por id si la entidad ya tiene _db_id
-			if getattr(cambio, "_db_id", None):
-				try:
-					dao_change.update_field(cambio._db_id, 'fechaHoraFin', cambio.fechaHoraFin)
-					cambio._fin_persisted = True
-					continue
-				except Exception:
-					pass
-
-			# heurística: buscar por fechaInicio entre modelos ya cargados (mejor que cargar toda la tabla repetidamente)
-			model_found = None
-			for m in all_changes:
-				if getattr(m, "fechaHoraInicio", None) == cambio.fechaHoraInicio:
-					resp_model = getattr(m, "responsableInspeccion", None)
-					if resp_model is None:
-						model_found = m
-						break
-					ent_resp = cambio.responsableInspeccion
-					if hasattr(ent_resp, "nombre") and hasattr(ent_resp, "apellido"):
-						if getattr(resp_model, "nombre", None) == ent_resp.nombre and getattr(resp_model, "apellido", None) == ent_resp.apellido:
-							model_found = m
-							break
-					else:
-						model_found = m
-						break
-
+			# actualizar por id si la entidad ya tiene referencia en modelo (dominio no tiene id)
+			# si existe id en la entidad es violación de la regla; asumimos que no y usamos heurísticas sobre modelos
+			# ...existing code...
 			if model_found:
 				try:
 					dao_change.update_field(model_found.id, 'fechaHoraFin', cambio.fechaHoraFin)
-					cambio._db_id = model_found.id
+					# NO asignar id a la entidad de dominio
 					cambio._fin_persisted = True
 				except Exception:
 					pass
@@ -149,13 +130,9 @@ def crear_cambio_y_vincular(evento, nuevo_cambio, session=None):
 	from Data.mappers.CambioDeEstadoMapper import cambio_to_model as mapper_cambio
 
 	dao_change = BaseDAO(CambioEstadoModel, session=session)
-	modelo_cambio = mapper_cambio(nuevo_cambio, evento=evento)
+	modelo_cambio = mapper_cambio(nuevo_cambio, evento_id=None)
 	created = dao_change.create(modelo_cambio)
-	# asignar _db_id en la entidad inmediatamente (útil para evitar futuras búsquedas heurísticas)
-	try:
-		nuevo_cambio._db_id = created.id
-	except Exception:
-		nuevo_cambio._db_id = getattr(created, "id", None)
+	# NO asignar id en la entidad del dominio
 	dao_change.close()
 	return created
 

@@ -3,8 +3,8 @@ from ClasesEntidad.CambioEstado import CambioEstado
 from ClasesEntidad.State.BloqueadoEnRevision import BloqueadoEnRevision
 
 class AutoDetectado(Estado):
-    def __init__(self, ambito, id=1):
-        super().__init__(ambito, id)
+    def __init__(self, ambito):
+        super().__init__(ambito)
         self.nombreEstado = "Autodetectado"
 
 

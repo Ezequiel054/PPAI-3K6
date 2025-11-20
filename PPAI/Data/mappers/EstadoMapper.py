@@ -11,47 +11,18 @@ def model_to_estado(model):
     if model is None:
         return None
 
-    id = getattr(model, "id", None)
     ambito = getattr(model, "ambito", None)
     nombre_estado = getattr(model, "nombreEstado", None)
-    if (nombre_estado == "AutoDetectado"):
+    if nombre_estado == "AutoDetectado":
         from ClasesEntidad.State.AutoDetectado import AutoDetectado
-        inst = AutoDetectado(ambito, id)
-        inst._db_id = id
-        return inst
-    elif (nombre_estado == "BloqueadoEnRevision"):
+        return AutoDetectado(ambito)
+    elif nombre_estado == "BloqueadoEnRevision":
         from ClasesEntidad.State.BloqueadoEnRevision import BloqueadoEnRevision
-        inst = BloqueadoEnRevision(ambito, id)
-        inst._db_id = id
-        return inst
-    elif (nombre_estado == "Rechazado"):
-        inst = Rechazado(ambito, id)
-        inst._db_id = id
-        return inst
+        return BloqueadoEnRevision(ambito)
+    elif nombre_estado == "Rechazado":
+        return Rechazado(ambito)
     else:
         return None
-
-    # # Buscamos todas las subclases de Estado
-    # subclases = {cls.__name__: cls for cls in Estado.__subclasses__()}
-
-    # # Buscamos si existe una subclase con el mismo nombre
-    # clase_estado = subclases.get(nombre_estado)
-
-    # if clase_estado:
-    #     # Si la encontramos, la instanciamos normalmente
-    #     return clase_estado(ambito)
-    # else:
-    #     # Si no existe esa subclase, usamos una genérica
-    #     class EstadoDesconocido(Estado):
-    #         def __init__(self, ambito, nombre):
-    #             super().__init__(ambito)
-    #             self.nombreEstado = nombre
-
-    #         def __repr__(self):
-    #             return f"<EstadoDesconocido(nombreEstado={self.nombreEstado})>"
-
-    #     return EstadoDesconocido(ambito, nombre_estado)
-
 
 def estado_to_model(obj):
     """

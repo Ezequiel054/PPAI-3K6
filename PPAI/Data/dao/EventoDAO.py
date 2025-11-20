@@ -1,61 +1,89 @@
 from Data.database import SessionLocal
 from Data.models.EventoSismico import EventoSismicoModel
+from Data.models.CambioEstado import CambioEstadoModel
 from Data.models.Estado import EstadoModel
+from Data.models.Empleado import EmpleadoModel
 from Data.mappers.EventoSismicoMapper import evento_to_model, model_to_evento
 from Data.mappers.CambioDeEstadoMapper import cambio_to_model
-from Data.mappers.EstadoMapper import estado_to_model
+from Data.dao.EstadoDAO import EstadoDAO
 
 
 class EventoDAO:
     def guardar(self, evento):
         """
-        Persiste/actualiza un Evento y sus CambiosEstado en una única transacción.
-        Usa los mappers existentes para convertir entidad -> modelo.
-        Devuelve la entidad reconstruida desde la BD (opcional).
+        Actualiza un Evento existente (no crea nuevos eventos).
+        - Busca el evento en BD por campos distintivos (fechaHoraOcurrencia + valorMagnitud).
+        - Actualiza campos permitidos y persiste nuevos CambiosEstado vinculados al evento.
+        - Devuelve la entidad de dominio reconstruida desde BD.
         """
         session = SessionLocal()
         try:
-            # 1) Convertir evento -> modelo (relaciones incluidas)
-            evento_model = evento_to_model(evento)
+            # Buscar evento ya existente (evitar crear nuevos registros)
+            existing = session.query(EventoSismicoModel).filter_by(
+                fechaHoraOcurrencia=getattr(evento, "fechaHoraOcurrencia", None),
+                valorMagnitud=getattr(evento, "valorMagnitud", None)
+            ).first()
 
-            # 2) Merge del evento (insert/update)
-            merged_event = session.merge(evento_model)
+            if existing is None:
+                # Política: NO crear eventos nuevos desde este DAO.
+                raise ValueError("Evento no existe en BD; EventoDAO.guardar solo actualiza eventos existentes.")
+
+            # Actualizar campos permisibles (solo memoria/BD)
+            existing.fechaHoraFin = getattr(evento, "fechaHoraFin", existing.fechaHoraFin)
+            existing.latitudEpicentro = getattr(evento, "latitudEpicentro", existing.latitudEpicentro)
+            existing.latitudHipocentro = getattr(evento, "latitudHipocentro", existing.latitudHipocentro)
+            existing.longitudEpicentro = getattr(evento, "longitudEpicentro", existing.longitudEpicentro)
+            existing.longitudHipocentro = getattr(evento, "longitudHipocentro", existing.longitudHipocentro)
+            existing.valorMagnitud = getattr(evento, "valorMagnitud", existing.valorMagnitud)
+
+            # Resolver estadoActual: buscar si existe un Estado coincidente y asignar FK
+            if getattr(evento, "estadoActual", None):
+                estado_dao = EstadoDAO(session=session)
+                existing_estado = estado_dao.find_by_nombre_y_ambito(evento.estadoActual.nombreEstado, evento.estadoActual.ambito)
+                if existing_estado:
+                    existing.estadoActual_id = existing_estado.id
+
             session.flush()
 
-            # 3) Asegurar persistencia de cambios de estado recién creados en memoria
+            # Persistir CambiosEstado nuevos (heurística: por fechaHoraInicio + evento_id)
             for cambio in getattr(evento, "cambiosEstado", []) or []:
-                # si ya tiene _db_id asumimos persistido
-                if getattr(cambio, "_db_id", None):
-                    continue
-                # uso del mapper para resolver ids (estado, responsable, evento) heurísticamente
-                cambio_model = cambio_to_model(cambio, evento=evento)
-                merged_cambio = session.merge(cambio_model)
-                session.flush()
-                # asignar back el id persistido a la entidad en memoria
-                try:
-                    cambio._db_id = merged_cambio.id
-                except Exception:
-                    cambio._db_id = getattr(merged_cambio, "id", None)
-
-            # 4) Actualizar referencia estadoActual_id si la entidad tiene estadoActual
-            if getattr(evento, "estadoActual", None):
-                estado_model = estado_to_model(evento.estadoActual)
-                # intentar encontrar un registro existente
-                existing = session.query(EstadoModel).filter_by(
-                    nombreEstado=estado_model.nombreEstado, ambito=estado_model.ambito
+                # ver si ya existe ese cambio para este evento
+                exist_cambio = session.query(CambioEstadoModel).filter_by(
+                    fechaHoraInicio=getattr(cambio, "fechaHoraInicio", None),
+                    eventoSismico_id=existing.id
                 ).first()
-                if existing:
-                    merged_event.estadoActual_id = existing.id
-                else:
-                    new_estado = session.merge(estado_model)
-                    session.flush()
-                    merged_event.estadoActual_id = new_estado.id
+                if exist_cambio:
+                    continue  # ya persistido
 
-            # 5) Commit único
+                # resolver fk estado_id
+                estado_row = None
+                if getattr(cambio, "estado", None):
+                    estado_row = session.query(EstadoModel).filter_by(
+                        nombreEstado=getattr(cambio.estado, "nombreEstado", None),
+                        ambito=getattr(cambio.estado, "ambito", None)
+                    ).first()
+
+                # resolver fk responsableInspeccion_id
+                responsable_row = None
+                if getattr(cambio, "responsableInspeccion", None):
+                    responsable_row = session.query(EmpleadoModel).filter_by(
+                        nombre=getattr(cambio.responsableInspeccion, "nombre", None),
+                        apellido=getattr(cambio.responsableInspeccion, "apellido", None)
+                    ).first()
+
+                cambio_model = CambioEstadoModel(
+                    fechaHoraInicio=cambio.fechaHoraInicio,
+                    fechaHoraFin=cambio.fechaHoraFin,
+                    estado_id=getattr(estado_row, "id", None),
+                    responsableInspeccion_id=getattr(responsable_row, "id", None),
+                    eventoSismico_id=existing.id
+                )
+                session.add(cambio_model)
+
+            # Commit único
             session.commit()
-            session.refresh(merged_event)
-            # devolver entidad reconstruida desde BD para consistencia
-            return model_to_evento(merged_event)
+            session.refresh(existing)
+            return model_to_evento(existing)
         except Exception as ex:
             session.rollback()
             print("Error en EventoDAO.guardar:", ex)
@@ -83,8 +111,7 @@ class EventoDAO:
         session = SessionLocal()
         try:
             # join por relación: Estado.nombreEstado == "AutoDetectado"
-            modelos = session.query(EventoSismicoModel).join(EstadoModel, EventoSismicoModel.estadoActual_id == EstadoModel.id)\
-                .filter(EstadoModel.nombreEstado == "AutoDetectado").all()
+            modelos = session.query(EventoSismicoModel).join("estadoActual").filter_by(nombreEstado="AutoDetectado").all()
             return [model_to_evento(m) for m in modelos]
         finally:
             session.close()

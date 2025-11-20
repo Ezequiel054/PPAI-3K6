@@ -30,10 +30,7 @@ def model_to_evento(model):
         [model_to_cambio(c) for c in getattr(model, "cambiosEstado", [])]
     )
 
-    # almacenar id de BD de forma privada (no forma parte de la API pública de la entidad)
-    Evento._db_id = getattr(model, "id", None)
-
-    print("Evento mapeado:", Evento)
+    # NO asignar id a la entidad de dominio
     return Evento
 
 def evento_to_model(obj):
@@ -51,14 +48,14 @@ def evento_to_model(obj):
         valorMagnitud=obj.valorMagnitud,
     )
 
-    # Relaciones (solo si existen)
+    # Relaciones (clasificacion, origen, alcance) - se mantienen
     model.clasificacionSismo = clasificacion_to_model(obj.clasificacion) if getattr(obj, "clasificacion", None) else None
     model.origenGeneracion = origen_to_model(obj.origenGeneracion) if getattr(obj, "origenGeneracion", None) else None
     model.alcanceSismo = alcance_to_model(obj.alcanceSismo) if getattr(obj, "alcanceSismo", None) else None
-    model.estadoActual = estado_to_model(obj.estadoActual) if getattr(obj, "estadoActual", None) else None
+    # NOTA: no asignar model.estadoActual aquí; el DAO decide la FK usando EstadoDAO.
 
-    # Relaciones 1 a muchos
+    # Relaciones 1 a muchos: no leer id de la entidad (evento no tiene id en dominio)
     model.series = [serie_to_model(s) for s in getattr(obj, "serieTemporal", [])]
-    model.cambiosEstado = [cambio_to_model(c) for c in getattr(obj, "cambiosEstado", [])]
+    model.cambiosEstado = [cambio_to_model(c, evento_id=None) for c in getattr(obj, "cambiosEstado", [])]
 
     return model

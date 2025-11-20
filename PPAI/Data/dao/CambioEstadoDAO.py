@@ -3,39 +3,19 @@ from Data.mappers.CambioDeEstadoMapper import cambio_to_model
 
 
 class CambioEstadoDAO:
-    def guardar(self, cambio, evento=None):
+    def guardar(self, cambio, evento_id=None):
         """
-        Persiste un CambioEstado (entidad) usando el mapper.
-        Si se pasa 'evento', se lo utiliza para resolver ids en el mapper.
+        Persiste un CambioEstado (entidad) usando el mapper simple.
+        evento_id puede pasarse si el cambio pertenece a un evento.
         """
         session = SessionLocal()
         try:
-            modelo = cambio_to_model(cambio, evento=evento)
+            modelo = cambio_to_model(cambio, evento_id=evento_id)
             merged = session.merge(modelo)
             session.commit()
             session.refresh(merged)
-            try:
-                cambio._db_id = merged.id
-            except Exception:
-                cambio._db_id = getattr(merged, "id", None)
+            # NO asignar id a la entidad de dominio (id queda en el modelo/BD)
             return merged
-        except Exception:
-            session.rollback()
-            raise
-        finally:
-            session.close()
-
-    def guardarCambiosDeEvento(self, evento):
-        session = SessionLocal()
-        try:
-            for cambio in getattr(evento, "cambiosEstado", []) or []:
-                if getattr(cambio, "_db_id", None):
-                    continue
-                modelo = cambio_to_model(cambio, evento=evento)
-                merged = session.merge(modelo)
-                session.flush()
-                cambio._db_id = getattr(merged, "id", None)
-            session.commit()
         except Exception:
             session.rollback()
             raise
