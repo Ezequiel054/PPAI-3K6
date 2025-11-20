@@ -173,6 +173,10 @@ class GestorRegRevisionManual:
         fechaHora = self.getFechaHoraActual()
         self.eventoSeleccionado.rechazarEvento(fechaHora, self.empleadoEnSesion)
 
+        print("\n Aca vamos a ver como queda el evento despues de bloquear en revision, justo antes de guardarse")
+        print("Guardar Evento: ", self.eventoSeleccionado)
+        print("Aca vamos a ver como queda el evento despues de bloquear en revision, justo despues de guardarse \n")
+
         # Delegar persistencia al DAO
         EventoDAO().guardar(self.eventoSeleccionado)
 
