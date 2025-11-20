@@ -67,13 +67,13 @@ class GestorRegRevisionManual:
 
 
     # PASO 4 y 5 (8 y 9)
-    def tomarSeleccionEventoSismico(self, indice):
-        self.eventoSeleccionado = self.eventosAutodetectados[indice]
+    def tomarSeleccionEventoSismico(self, id_evento):
+        self.eventoSeleccionado = [id_evento, self.eventosAutodetectados[id_evento]]
         print("Tomar Seleccion Evento Sismico", self.eventoSeleccionado)
-        print(self.eventoSeleccionado.estadoActual.nombreEstado)
+        print(self.eventoSeleccionado[1].estadoActual.nombreEstado)
         self.bloquearEventoSeleccionado(self.eventoSeleccionado)
 
-        print(self.eventoSeleccionado.estadoActual.nombreEstado)
+        print(self.eventoSeleccionado[1].estadoActual.nombreEstado)
 
         datosYSerieEvento = self.buscarDatosEventoSismicoSeleccionado(self.eventoSeleccionado)
         # datosYSerieEvento = [datosEvento, [ [serie1, datosSerie1], [serie2, datosSerie2] ] ]
@@ -91,7 +91,8 @@ class GestorRegRevisionManual:
     def bloquearEventoSeleccionado(self, evento):
         # estadoBloqueadoEnRevision = self.buscarEstadoBloqueado()
         fecha = self.getFechaHoraActual()
-        evento.bloquearEnRevision(fecha, self.empleadoEnSesion)
+        print("Bloquear Evento Seleccionado:", evento)
+        evento[1].bloquearEnRevision(fecha, self.empleadoEnSesion)
         print("Bloquear Evento")
 
 

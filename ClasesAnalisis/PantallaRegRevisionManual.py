@@ -51,7 +51,7 @@ class PantallaRegRevisionManual:
 
         for id, datos in datosEventos.items():
             valoresDatos = list(datos.values())
-            self.tabla_eventos.insert("", "end", values=valoresDatos)
+            self.tabla_eventos.insert("", "end", iid=str(id), values=valoresDatos)
 
         botonEnviar = Button(self.root, text="Enviar", font=self.fuente,
                             command=self.tomarSeleccionEventoSismico)
@@ -62,13 +62,11 @@ class PantallaRegRevisionManual:
 
 
     def tomarSeleccionEventoSismico(self):
-        indice = self.tabla_eventos.selection()[0] # I001
-        print("Indice seleccionado:", indice)
-        if indice:
-            seleccion = int(indice[1:]) - 1 # Indice de la tabla -1 es el indice de la lista
+        seleccion = self.tabla_eventos.selection()
+        if seleccion:
+            id_evento = int(seleccion[0])  # obtengo el ID real del evento
             self.root.destroy()
-            print("Seleccionado:", seleccion)
-            self.gestor.tomarSeleccionEventoSismico(seleccion)
+            self.gestor.tomarSeleccionEventoSismico(id_evento)
         else:
             messagebox.showwarning("Selección requerida",
                                    "Por favor seleccione al menos una fila antes de enviar.")

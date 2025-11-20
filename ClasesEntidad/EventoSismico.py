@@ -68,8 +68,6 @@ class EventoSismico:
 
     def setEstadoActual(self, estado):
         self.estadoActual = estado
-        dao = BaseDAO(EventoSismicoModel)
-        dao.update_field(self.id, 'estadoActual_id', estado.id)
 
 
     # def crearCambioEstado(self, fecha, estado, empleado):

@@ -14,20 +14,19 @@ class AutoDetectado(Estado):
 
     def bloquearEnRevision(self, fecha, empleado, cambiosEstado,eventoSismico):
         
-        self.buscarEstadoActual(fecha,cambiosEstado)
+        cambioEstActual = self.buscarEstadoActual(cambiosEstado)
+        cambioEstActual.setFechaFin(fecha)
         
         estadoBloqueado = self.crearProximoEstado()
-        
-        cambioEstado = self.crearCambioEstado(fecha, estadoBloqueado, empleado, eventoSismico.id)
-
+        cambioEstado = self.crearCambioEstado(fecha, estadoBloqueado, empleado, eventoSismico)
         eventoSismico.agregarCambioEstado(cambioEstado)
 
         eventoSismico.setEstadoActual(estadoBloqueado)
 
-    def buscarEstadoActual(self, fechaFin,cambioEstados):
+    def buscarEstadoActual(self,cambioEstados):
         for cambioEst in cambioEstados:
             if cambioEst.esEstadoActual():
-                cambioEst.setFechaFin(fechaFin)
+                return cambioEst
 
 
     def crearCambioEstado(self, fecha, estado, empleado, eventoSismico_id):
