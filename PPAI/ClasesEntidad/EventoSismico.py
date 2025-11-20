@@ -22,8 +22,25 @@ class EventoSismico:
         self.cambiosEstado = cambiosEst
 
 
+    # def __str__(self):
+    #    return f"EventoSismico({self.fechaHoraOcurrencia}, {self.latitudEpicentro}, {self.longitudEpicentro}, {self.valorMagnitud})"
+    
+    # def __str__(self):
+    #    atributos = ", ".join(f"{k}={v}" for k, v in self.__dict__.items())
+    #    return f"EventoSismico({atributos})"
+
     def __str__(self):
-        return f"EventoSismico({self.fechaHoraOcurrencia}, {self.latitudEpicentro}, {self.longitudEpicentro}, {self.valorMagnitud})"
+        atributos = []
+        for k, v in self.__dict__.items():
+            if k == "cambiosEstado" and isinstance(v, list):
+                # Convertir cada cambio a string
+                cambios = ", ".join(str(c) for c in v)
+                atributos.append(f"{k}=[{cambios}]")
+            else:
+                atributos.append(f"{k}={v}")
+        
+        return "EventoSismico(" + ", ".join(atributos) + ")"
+
 
     def esAutodetectado(self):
         return self.estadoActual.esAutodetectado()

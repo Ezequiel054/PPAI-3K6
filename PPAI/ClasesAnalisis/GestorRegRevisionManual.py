@@ -98,8 +98,10 @@ class GestorRegRevisionManual:
         evento.bloquearEnRevision(fecha, self.empleadoEnSesion)
 
         # Delegar persistencia al DAO (se encarga de transacción y commit)
+        print("\n Aca vamos a ver como queda el evento despues de bloquear en revision, justo antes de guardarse")
+        print("Guardar Evento: ", evento)
         EventoDAO().guardar(evento)
-
+        print("Aca vamos a ver como queda el evento despues de bloquear en revision, justo despues de guardarse \n")
         print("Bloquear Evento")
 
 
