@@ -5,9 +5,14 @@ from Data.data import sismografos as dataSismografos
 from Data.data import sesiones as dataSesion
 import os
 
-# --- usar repositorios en lugar de hacer DB desde el gestor ---
-from Data.repositories.CambioEstadoRepository import CambioEstadoRepository
-from Data.repositories.EventoRepository import EventoRepository
+# usar mappers + DAO / SessionLocal directamente
+from Data.dao.baseDao import BaseDAO
+from Data.models.CambioEstado import CambioEstadoModel
+from Data.models.EventoSismico import EventoSismicoModel
+from Data.models.Estado import EstadoModel
+from Data.models.Empleado import EmpleadoModel
+from Data.database import SessionLocal
+from Data.mappers.CambioDeEstadoMapper import cambio_to_model
 
 
 class GestorRegRevisionManual:
@@ -175,28 +180,6 @@ class GestorRegRevisionManual:
         print("Rechazar Evento")
 
 
-    # --- helper: persistir el último cambio creado en memoria y actualizar estado del evento ---
-    def _persistir_nuevo_cambio_y_actualizar_evento(self, evento, fecha_creacion):
-        # 1) Persistir cambios cerrados (si los hay)
-        CambioEstadoRepository.persist_closed_changes(evento)
-
-        # 2) localizar el cambio recién creado en memoria (intenta por fechaHoraInicio)
-        nuevo_cambio = None
-        for c in reversed(evento.cambiosEstado):
-            if getattr(c, "fechaHoraInicio", None) == fecha_creacion:
-                nuevo_cambio = c
-                break
-        if not nuevo_cambio and evento.cambiosEstado:
-            nuevo_cambio = evento.cambiosEstado[-1]
-
-        # 3) Persistir nuevo cambio si existe
-        if nuevo_cambio:
-            CambioEstadoRepository.create_new_change(nuevo_cambio, evento)
-
-        # 4) Actualizar estadoActual del evento en BD (si corresponde)
-        EventoRepository.update_estado(evento, evento.estadoActual)
-
-
     def finCU(self):
         print("Fin del CU")
 
@@ -214,4 +197,72 @@ class GestorRegRevisionManual:
             if est.esConfirmado() and est.esAmbitoEventoSismico():
                 return est
         return None
+
+
+
+
+
+    # --- helper: persistir el último cambio creado en memoria y actualizar estado del evento ---
+    def _persistir_nuevo_cambio_y_actualizar_evento(self, evento, fecha_creacion):
+        # 1) Persistir cambios cerrados (fechaHoraFin != None)
+        session = SessionLocal()
+        dao_change = BaseDAO(CambioEstadoModel)
+        for cambio in evento.cambiosEstado:
+            if getattr(cambio, "fechaHoraFin", None) is not None and not getattr(cambio, "_fin_persisted", False):
+                if getattr(cambio, "_db_id", None):
+                    try:
+                        dao_change.update_field(cambio._db_id, 'fechaHoraFin', cambio.fechaHoraFin)
+                        cambio._fin_persisted = True
+                    except Exception:
+                        pass
+                else:
+                    # buscar por fechaHoraInicio y responsable (nombre/apellido) como heurística
+                    q = session.query(CambioEstadoModel).filter_by(fechaHoraInicio=cambio.fechaHoraInicio)
+                    if hasattr(cambio.responsableInspeccion, "nombre") and hasattr(cambio.responsableInspeccion, "apellido"):
+                        emp = session.query(EmpleadoModel).filter_by(
+                            nombre=cambio.responsableInspeccion.nombre,
+                            apellido=cambio.responsableInspeccion.apellido
+                        ).first()
+                        if emp:
+                            q = q.filter_by(responsableInspeccion_id=emp.id)
+                    modelo = q.first()
+                    if modelo:
+                        modelo.fechaHoraFin = cambio.fechaHoraFin
+                        session.commit()
+                        cambio._db_id = modelo.id
+                        cambio._fin_persisted = True
+
+        # 2) localizar el cambio recién creado en memoria (intenta por fechaHoraInicio)
+        nuevo_cambio = None
+        for c in reversed(evento.cambiosEstado):
+            if getattr(c, "fechaHoraInicio", None) == fecha_creacion:
+                nuevo_cambio = c
+                break
+        if not nuevo_cambio and evento.cambiosEstado:
+            nuevo_cambio = evento.cambiosEstado[-1]
+
+        # 3) Persistir nuevo cambio si existe (mapper -> modelo -> DAO.create)
+        if nuevo_cambio:
+            modelo_cambio = cambio_to_model(nuevo_cambio, evento=evento)
+            created = BaseDAO(CambioEstadoModel).create(modelo_cambio)
+            try:
+                nuevo_cambio._db_id = created.id
+            except Exception:
+                nuevo_cambio._db_id = getattr(created, "id", None)
+
+        # 4) Actualizar estadoActual del Evento en BD (buscar evento_id por fecha+magnitud)
+        evento_row = session.query(EventoSismicoModel).filter_by(
+            fechaHoraOcurrencia=getattr(evento, "fechaHoraOcurrencia", None),
+            valorMagnitud=getattr(evento, "valorMagnitud", None)
+        ).first()
+        if evento_row:
+            estado_row = session.query(EstadoModel).filter_by(
+                nombreEstado=getattr(evento.estadoActual, "nombreEstado", None),
+                ambito=getattr(evento.estadoActual, "ambito", None)
+            ).first()
+            if estado_row:
+                BaseDAO(EventoSismicoModel).update_field(evento_row.id, 'estadoActual_id', estado_row.id)
+
+        session.close()
+
 
