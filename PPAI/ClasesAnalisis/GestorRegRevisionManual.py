@@ -5,13 +5,8 @@ from Data.data import sismografos as dataSismografos
 from Data.data import sesiones as dataSesion
 import os
 
-# usar mappers + DAO directamente (sin consultas crudas en el gestor)
-from Data.dao.baseDao import BaseDAO, persistir_cambios_cerrados, crear_cambio_y_vincular, actualizar_estado_evento
-from Data.models.CambioEstado import CambioEstadoModel
-from Data.models.EventoSismico import EventoSismicoModel
-from Data.models.Estado import EstadoModel
-from Data.database import SessionLocal
-from Data.mappers.CambioDeEstadoMapper import cambio_to_model
+# Reemplazar las importaciones y la lógica de persistencia por un DAO simple
+from Data.dao.EventoDAO import EventoDAO
 
 
 class GestorRegRevisionManual:
@@ -98,11 +93,13 @@ class GestorRegRevisionManual:
 
 
     def bloquearEventoSeleccionado(self, evento):
-        # estadoBloqueadoEnRevision = self.buscarEstadoBloqueado()
+        # El gestor solo orquesta: cambia el dominio y pide persistir al DAO
         fecha = self.getFechaHoraActual()
         evento.bloquearEnRevision(fecha, self.empleadoEnSesion)
-        # Persistir el nuevo cambio y actualizar el evento en BD
-        self._persistir_nuevo_cambio_y_actualizar_evento(evento, fecha)
+
+        # Delegar persistencia al DAO (se encarga de transacción y commit)
+        EventoDAO().guardar(evento)
+
         print("Bloquear Evento")
 
 
@@ -171,11 +168,12 @@ class GestorRegRevisionManual:
         pass
 
     def rechazarEvento(self):
-        #estadoRechazado = self.buscarEstadoRechazado(self.estados)
         fechaHora = self.getFechaHoraActual()
         self.eventoSeleccionado.rechazarEvento(fechaHora, self.empleadoEnSesion)
-        # Persistir el nuevo cambio (rechazo) y actualizar estado del evento en BD
-        self._persistir_nuevo_cambio_y_actualizar_evento(self.eventoSeleccionado, fechaHora)
+
+        # Delegar persistencia al DAO
+        EventoDAO().guardar(self.eventoSeleccionado)
+
         print("Rechazar Evento")
 
 
@@ -196,46 +194,5 @@ class GestorRegRevisionManual:
             if est.esConfirmado() and est.esAmbitoEventoSismico():
                 return est
         return None
-
-
-
-
-
-    # --- helper: persistir el último cambio creado en memoria y actualizar estado del evento ---
-    def _persistir_nuevo_cambio_y_actualizar_evento(self, evento, fecha_creacion):
-        """
-        Orquestador: abre una sesión/transaction única, delega pasos a helpers DAO que aceptan session.
-        """
-        session = SessionLocal()
-        try:
-            # 1) Persistir cambios cerrados (dentro de la misma transacción)
-            persistir_cambios_cerrados(evento, session=session)
-
-            # 2) localizar el cambio recién creado en memoria (intenta por fechaHoraInicio)
-            nuevo_cambio = None
-            for c in reversed(evento.cambiosEstado):
-                if getattr(c, "fechaHoraInicio", None) == fecha_creacion:
-                    nuevo_cambio = c
-                    break
-            if not nuevo_cambio and evento.cambiosEstado:
-                nuevo_cambio = evento.cambiosEstado[-1]
-
-            # 3) Persistir nuevo cambio si existe (delegado al DAO con la misma sesión)
-            if nuevo_cambio:
-                crear_cambio_y_vincular(evento, nuevo_cambio, session=session)
-
-            # 4) Actualizar estadoActual del evento en BD (delegado al DAO con la misma sesión)
-            actualizar_estado_evento(evento, session=session)
-
-            # Commit único
-            session.commit()
-        except Exception as ex:
-            # rollback centralizado en caso de fallo
-            session.rollback()
-            # opcional: log o rethrow
-            print("Error al persistir cambios:", ex)
-            raise
-        finally:
-            session.close()
 
 
