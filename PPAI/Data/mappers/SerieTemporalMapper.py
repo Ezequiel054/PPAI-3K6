@@ -4,13 +4,15 @@ from Data.mappers.MuestraSismicaMapper import model_to_muestra
 
 def model_to_serie(model):
     muestras = [model_to_muestra(m) for m in model.muestraSismica] if hasattr(model, "muestraSismica") and model.muestraSismica else []
-    return SerieTemporal(
+    serie = SerieTemporal(
         model.condicionAlarma,
         model.fechaHoraInicioRegistroMuestras,
         model.fechaHoraRegistro,
         model.frecuenciaMuestreo,
         muestras
     )
+    serie._db_id = getattr(model, "id", None)
+    return serie
 
 def serie_to_model(obj):
     return SerieTemporalModel(

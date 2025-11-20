@@ -4,7 +4,9 @@ from Data.mappers.UsuarioMapper import model_to_usuario, usuario_to_model
 
 def model_to_sesion(model):
     usuario = model_to_usuario(model.usuario) if hasattr(model, "usuario") and model.usuario else None
-    return Sesion(model.fechaHoraDesde, model.fechaHoraHasta, usuario)
+    s = Sesion(model.fechaHoraDesde, model.fechaHoraHasta, usuario)
+    s._db_id = getattr(model, "id", None)
+    return s
 
 def sesion_to_model(obj):
     return SesionModel(

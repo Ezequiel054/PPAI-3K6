@@ -10,6 +10,7 @@ def model_to_cambio(model):
         model.estado,
         model.responsableInspeccion
     )
+    # conservar id de BD en atributo privado
     cambio._db_id = getattr(model, "id", None)
     return cambio
 

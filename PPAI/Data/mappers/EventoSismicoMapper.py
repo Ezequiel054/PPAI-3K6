@@ -30,8 +30,8 @@ def model_to_evento(model):
         [model_to_cambio(c) for c in getattr(model, "cambiosEstado", [])]
     )
 
-    # No llamar a un setter de BD en la entidad. Si es necesario, el mapper/repo puede dejar atributo privado:
-    # Evento._db_id = getattr(model, "id", None)
+    # almacenar id de BD de forma privada (no forma parte de la API pública de la entidad)
+    Evento._db_id = getattr(model, "id", None)
 
     print("Evento mapeado:", Evento)
     return Evento

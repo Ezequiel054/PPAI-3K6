@@ -3,7 +3,7 @@ from Data.models.EstacionSismologica import EstacionSismologicaModel
 
 
 def model_to_estacion(model):
-    return EstacionSismologica(
+    est = EstacionSismologica(
         model.codigoEstacion,
         model.nombre,
         model.latitud,
@@ -12,6 +12,8 @@ def model_to_estacion(model):
         model.documentoCertificacionAdq,
         model.fechaSolcitudCertificacion
     )
+    est._db_id = getattr(model, "id", None)
+    return est
 
 def estacion_to_model(obj):
     return EstacionSismologicaModel(

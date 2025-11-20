@@ -2,7 +2,9 @@ from ClasesEntidad.TipoDeDato import TipoDeDato
 from Data.models.TipoDeDato import TipoDeDatoModel
 
 def model_to_tipo(model):
-    return TipoDeDato(model.denominacion, model.nombreUnidadMedida, model.valorUmbral)
+    tipo = TipoDeDato(model.denominacion, model.nombreUnidadMedida, model.valorUmbral)
+    tipo._db_id = getattr(model, "id", None)
+    return tipo
 
 def tipo_to_model(obj):
     return TipoDeDatoModel(

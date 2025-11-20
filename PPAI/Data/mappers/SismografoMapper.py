@@ -9,18 +9,19 @@ def model_to_sismografo(model):
     if hasattr(model, "serieTemporal") and model.serieTemporal:
         series = [model_to_serie(s) for s in model.serieTemporal]
 
-
-    
     estacion = model_to_estacion(model.estacionSismologica) if hasattr(model, "estacionSismologica") and model.estacionSismologica else None
-    print("Estacion mapeada:", estacion)
-
-    return Sismografo(
+    s = Sismografo(
         model.fechaAdquisicion,
         model.identificadorSismografo,
         model.nroSerie,
         estacion,
         series  # lista de series
     )
+    s._db_id = getattr(model, "id", None)
+    print("Estacion mapeada:", estacion)
+    return s
+
+
 def sismografo_to_model(obj):
     return SismografoModel(
         fechaAdquisicion=obj.fechaAdquisicion,

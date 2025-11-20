@@ -17,13 +17,16 @@ def model_to_estado(model):
     if (nombre_estado == "AutoDetectado"):
         from ClasesEntidad.State.AutoDetectado import AutoDetectado
         inst = AutoDetectado(ambito, id)
+        inst._db_id = id
         return inst
     elif (nombre_estado == "BloqueadoEnRevision"):
         from ClasesEntidad.State.BloqueadoEnRevision import BloqueadoEnRevision
         inst = BloqueadoEnRevision(ambito, id)
+        inst._db_id = id
         return inst
     elif (nombre_estado == "Rechazado"):
         inst = Rechazado(ambito, id)
+        inst._db_id = id
         return inst
     else:
         return None
