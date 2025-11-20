@@ -15,8 +15,14 @@ class BloqueadoEnRevision(Estado):
     def rechazar(self, fechaActual, empleado, cambiosEstado, eventoSismico):
        
 
-        self.buscarCambioEstadoActual(fechaActual,cambiosEstado)
-      
+        cambioEstadoActual = self.buscarCambioEstadoActual(fechaActual,cambiosEstado)
+
+        print()
+        print("Cambio Estado Actual a cerrar:")
+        cambioEstadoActual.setFechaFin(fechaActual) # Ahora aca se cierra el cambio de estado actual (fechaActual = fechaFin)
+        print(cambioEstadoActual)
+        print()
+
         estadoRechazado = self.crearProximoEstado()
         
         cambioEstado = self.crearCambioEstado(fechaActual, estadoRechazado, empleado, eventoSismico.id)
@@ -29,7 +35,8 @@ class BloqueadoEnRevision(Estado):
     def buscarCambioEstadoActual(self, fechaFin,cambioEstados):
         for cambioEst in cambioEstados:
             if cambioEst.esEstadoActual():
-                cambioEst.setFechaFin(fechaFin)
+                return cambioEst
+                # cambioEst.setFechaFin(fechaFin)
 
 
     def crearCambioEstado(self, fecha, estado, empleado, eventoSismico_id):
